@@ -339,9 +339,6 @@ int Microbot::ForwardKinematics(Jointspace j, Taskspace &t) {
 
 	t.g = j.j[6];
 
-	//R = R * 180 / pi
-	//P = P * 180 / pi
-	// R1 = R1 * 180 / pi
 
 	return 1;
 };
@@ -376,29 +373,29 @@ int Microbot::CheckWorkspaceLimits(Jointspace j) {
 
 	// Base
 	if (j.j[1] * 180.0 / PI > 90 || j.j[1] * 180.0 / PI < -90) {
-		printf("BASE ANGLE EXCEEDED \n");
+		printf("ERROR: BASE ANGLE EXCEEDED \n");
 		return BASE_ANGLE_EXCEEDED;
 	};
 	// Shoulder
 	if ((j.j[2] * 180.0 / PI > 144) || (j.j[2] * 180.0 / PI < -35)) {
-		printf("SHOULDER_ANGLE_EXCEEDED \n");
+		printf("ERROR: SHOULDER ANGLE EXCEEDED \n");
 		return SHOULDER_ANGLE_EXCEEDED;
 	};
 	// Elbow
 	if (j.j[3] * 180.0 / PI > 0 || j.j[3] * 180.0 / PI < -149) {
-		printf("ELBOW_ANGLE_EXCEEDED \n");
+		printf("ERROR: ELBOW ANGLE EXCEEDED \n");
 		return ELBOW_ANGLE_EXCEEDED;
 	};
 	// Wrist Pitch
 	if ((j.j[5] + j.j[4])*0.5 * 180.0 / PI > 90 || (j.j[5] + j.j[4])*0.5 * 180.0 / PI < -90) {
 		return PITCH_ANGLE_EXCEEDED;
-		printf("PITCH_ANGLE_EXCEEDED \n");
+		printf("ERROR: PITCH ANGLE EXCEEDED \n");
 	};
 
 	// Wrist Roll
 	if ((j.j[5] - j.j[4])*0.5 * 180.0 / PI > 270 || (j.j[5] - j.j[4])*0.5 * 180.0 / PI < -270) {
 		return ROLL_ANGLE_EXCEEDED;
-		printf("ROLL_ANGLE_EXCEEDED \n");
+		printf("ERROR: ROLL ANGLE EXCEEDED \n");
 	};
 
 	return 1;
@@ -414,7 +411,7 @@ bool Microbot::CheckWorkspaceLimits(Taskspace t) {
 	}
 
 	if (t.x < 40.64 && abs(t.y) < 75) {
-		//printf("X-COORDINATE OUTSIDE WORKSPACE \n");
+		printf("X-COORDINATE OUTSIDE WORKSPACE \n");
 		noError = false;
 	}
 
@@ -439,14 +436,6 @@ int Microbot::SetDelta(Registerspace start, Registerspace finish) {
 		delta.r[i] = finish.r[i] - start.r[i];
 	};
 
-
-
-	/*for (int i = 1; i <= 6; i++) {
-		cout << "Finish " << finish.r[i] << " Start " << start.r[i] << endl;
-	}
-	cout << endl;
-	*/
-
 	return 1;
 
 }
@@ -456,20 +445,12 @@ int Microbot::SetDelta(Jointspace start, Jointspace finish) {
 		deltaJoints.j[i] = finish.j[i] - start.j[i];
 	};
 
-
-
-	/*for (int i = 1; i <= 6; i++) {
-		cout << "Finish " << finish.r[i] << " Start " << start.r[i] << endl;
-	}
-	cout << endl;
-	*/
-
 	return 1;
 }
 
 
 
-int  Microbot::MoveTo(Taskspace &t) {
+/*int  Microbot::MoveTo(Taskspace &t) {
 	Pose tmp = currentPose;
 
 
@@ -490,6 +471,26 @@ int  Microbot::MoveTo(Taskspace &t) {
 
 	SpaceConvertion(tmp, t);
 
+	SendStep(microbot_speed, delta);
+
+	lastPose = currentPose;
+	currentPose = tmp;
+
+	return 1;
+
+}*/
+
+int  Microbot::MoveTo(Taskspace &t) {
+	Pose tmp = currentPose;
+
+
+	int check = SpaceConvertion(tmp, t);
+	if (check <= 0) {
+		return 0;
+	}
+
+	SetDelta(currentPose.js, tmp.js);
+	JointToRegister(deltaJoints, delta);
 	SendStep(microbot_speed, delta);
 
 	lastPose = currentPose;
@@ -583,7 +584,7 @@ int Microbot::SpaceConvertion(Pose &pose, Jointspace j) {
 
 //#################### TOWER OF HANOI HANDLING ####################################
 
-int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, double gripForce) {
+int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int gripForce) {
 
 	int extraHeight = 75;
 	int talestTower = 25 * 6;
@@ -627,10 +628,6 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, dou
 	//move above location 1 post pickup
 
 	tmp.ts.z = height;
-	
-
-
-
 	MoveTo(tmp.ts);
 
 	//move above location 2 pre placement
@@ -739,4 +736,63 @@ int Microbot::MeasureCubes(Cube c[])//
 	return i;
 }
 
-// Gleðileg jól
+void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]) {
+	if (n > 0) {
+		TowerofHanoi(n - 1, s, d, i, moves, c, t);
+		cout << "Move " << moves++ << ": Cube " << n;
+		cout << " is moved from tower " << s;
+		cout << " to tower " << d << endl;
+
+			PickandPlace(c[n].ts, t[d].ts, 100, -1);
+			c[n].ts = currentPose.ts;
+			t[s].ts.z -= 25;
+			t[d].ts.z += 25;
+
+
+		TowerofHanoi(n - 1, i, s, d, moves, c, t);
+	}
+}
+
+void UserInterface(Microbot robot) {
+	Taskspace next;
+	Taskspace current;
+	int GUI = 1;
+	string input;
+	stringstream buffer;
+
+	robot.CurrentPosition(current);
+
+	while (GUI) {
+		robot.CurrentPosition(next);
+		printf("Input the coordinates (X [mm], Y [mm], Z [mm], P [deg], R [deg], G [mm]): ");
+
+		getline(cin, input);
+		buffer << input;
+		buffer >> next.x >> next.y >> next.z >> next.p >> next.r >> next.g;
+		std::stringstream().swap(buffer);
+
+		printf("Going from (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm) ", current.x, current.y, current.z, current.p, current.r, current.g);
+		printf("to (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", next.x, next.y, next.z, next.p, next.r, next.g);
+
+		robot.MoveTo(next);
+
+		robot.CurrentPosition(current);
+
+		printf("Do you want to continue? (1/0): ");
+		getline(cin, input);
+		buffer << input;
+		buffer >> GUI;
+		std::stringstream().swap(buffer);
+		cin.ignore();
+
+		while ((GUI != 0) && (GUI != 1))
+		{
+			printf("Invalid input\n Do you want to continue? (1/0): ");
+			getline(cin, input);
+			buffer << input;
+			buffer >> GUI;
+			std::stringstream().swap(buffer);
+			cin.ignore();
+		}
+	}
+}

@@ -13,7 +13,26 @@ int main()
 	stringstream buffer;
 	int GUI = 1;
 	Cube banani[5];
+	Cube cube[6];
+	Tower tower[4];
 
+	int n = 3;
+	int m = 1;
+	
+
+	cube[1].ts = { 200,-75,0,-90,90,0 };
+	cube[2].ts = { 200,-75,25,-90,90,0 };
+	cube[3].ts = { 200,-75,50,-90,90,0 };
+
+	tower[1].ts = { 200,-75,50,-90,90,0 };
+	tower[2].ts = { 200,0,0,-90,90,0 };
+	tower[3].ts = { 200,75,0,-90,90,0 };
+
+	robot.TowerofHanoi(n,1,2,3,m,cube,tower);
+
+
+
+	/*
 	robot.SendClose(spe, -1);
 	robot.SendReset();
 	next = {125,0,40,-90,90,0};
