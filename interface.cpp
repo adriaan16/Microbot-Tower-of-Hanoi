@@ -488,6 +488,7 @@ int  Microbot::MoveTo(Taskspace &t) {
 
 	JointToRegister(deltaJoints, delta);
 
+	SpaceConvertion(tmp, t);
 
 	SendStep(microbot_speed, delta);
 
@@ -594,7 +595,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, dou
 	tmp.ts = start;
 
 
-	//move above location 1 pre
+	//move above location 1 pre pickup
 
 	tmp.ts.z = height;
 	MoveTo(tmp.ts);
@@ -622,13 +623,13 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, dou
 
 	cout << "Gripper: " << tmp.ts.g << " + " << tmpGripHandler.ts.g << " = " << gripper << endl;
 
-	//move above location 1 post
+	//move above location 1 post pickup
 
 	tmp.ts.z = height;
 	tmp.ts.g = gripper;
 	MoveTo(tmp.ts);
 
-	//move above location 2 pre
+	//move above location 2 pre placement
 	tmp.ts = finish;
 	tmp.ts.z = height;
 	tmp.ts.g = gripper;
@@ -644,10 +645,82 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, dou
 	tmp.ts.g = tmp.ts.g + 30;
 	MoveTo(tmp.ts);
 
-	//move to location 2 post
+	//move to location 2 post placement
 	//tmp.ts = finish;
 	tmp.ts.z = height;
 	MoveTo(tmp.ts);
 
 	return 1;
+}
+
+
+//This function fills in the position of the cubes and returns how many cubes were measure
+int Microbot::MeasureCubes(Cube c[])//
+{
+	Taskspace t = currentPose.ts;
+	Pose tmpGripHandler;
+	int i = 0;
+	while (true)
+	{
+		//Gripper above cube, along x-axis, open 80mm
+		t.z = 30;
+		t.r = 90;
+		t.g = 80;
+		MoveTo(t);
+
+		//Move gripper down to cube
+		t.z = 10;
+		MoveTo(t);
+
+		//Use close command to measure width of cube
+		SendReset();
+		SendClose(microbot_speed, -1);
+		SendRead(tmpGripHandler.rs);
+		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
+		t.g += tmpGripHandler.ts.g;
+		cout << "Gripper: " << t.g << " [mm]" << endl;
+		SpaceConvertion(currentPose, t);
+		tmpGripHandler.ts.g = t.g;
+		MoveTo(t);
+
+		//Open gripper back to 80mm
+		t.g = 80;
+		MoveTo(t);
+
+		//Move 30mm above base
+		t.z = 30;
+		MoveTo(t);
+
+		//Here we check whether a cube is present or not, and if it is done measuring all cubes
+		for (int j = 1; j <= 5; j++)
+		{
+			//Find out which of the five cubes is being measured
+			if (((CUBE[j] - 4) < tmpGripHandler.ts.g) && (tmpGripHandler.ts.g < (CUBE[j] + 4)))
+			{
+				c[i + 1].ts = t;
+				c[i + 1].n = j;
+				c[i++ + 1].size = CUBE[j];
+				cout << "Cube assigned!\n";
+				break;
+			}
+			//If the size didn't fit for any of the five cubes and is bigger than 20mm
+			//or if it was the first measurement and didn't fit for any of the five cubes
+			else if ((j == 5) && (tmpGripHandler.ts.g >= 20 || i == 0))
+			{
+				cout << "Unknown size or no cube measured\n";
+				return i;
+			}
+			//
+			else if (j == 5)
+			{
+				cout << "All cubes measured\n";
+				return i;
+			}
+		}
+		//If there the gripper measured one of the five cubes it moves 50 mm to the side
+		t.y += 65;
+		MoveTo(t);
+	}
+
+	return i;
 }
