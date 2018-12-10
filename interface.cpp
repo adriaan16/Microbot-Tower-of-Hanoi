@@ -665,7 +665,7 @@ int Microbot::MeasureCubes(Cube c[])//
 	while (true)
 	{
 		//Gripper above cube, along x-axis, open 80mm
-		t.z = 30;
+		t.z = 40;
 		t.r = 90;
 		t.g = 80;
 		MoveTo(t);
@@ -690,7 +690,7 @@ int Microbot::MeasureCubes(Cube c[])//
 		MoveTo(t);
 
 		//Move 30mm above base
-		t.z = 30;
+		t.z = 40;
 		MoveTo(t);
 
 		//Here we check whether a cube is present or not, and if it is done measuring all cubes
@@ -716,21 +716,21 @@ int Microbot::MeasureCubes(Cube c[])//
 			else if (j == 5)
 			{
 				cout << "All cubes measured\n";
+				for (int k = 1; k <= i; k++) {
+					tmp = c[k];
+					l = k;
+					while (l > 1 && c[l - 1].n > tmp.n) {
+						c[l] = c[l - 1];
+						l--;
+					}
+					c[l] = tmp;
+				}
 				return i;
 			}
 		}
 		//If there the gripper measured one of the five cubes it moves 50 mm to the side
 		t.y += 65;
 		MoveTo(t);
-	}
-	for (int k = 1; k <= i; k++) {
-		tmp = c[k];
-		l = k;
-		while (l > 1 && c[l - 1].n > tmp.n) {
-			c[l] = c[l - 1];
-			l--;
-		}
-		c[l] = tmp;
 	}
 	return i;
 }

@@ -12,6 +12,20 @@ int main()
 	string input;
 	stringstream buffer;
 	int GUI = 1;
+	Cube banani[5];
+
+	robot.SendClose(spe, -1);
+	robot.SendReset();
+	next = {125,0,40,-90,90,0};
+	robot.MoveTo(next);
+	next = {175,-125,40,-90,90,0};
+	robot.MoveTo(next);
+	robot.MeasureCubes(banani);
+	robot.GoHome();
+	for (int i = 1; i <= 3; i++)
+	{
+		cout << banani[i].n << " ";
+	}
 	/*
 	robot.SetSpeed(spe);
 	robot.CurrentPosition(current);
@@ -53,7 +67,7 @@ int main()
 
 	//adding test comment
 
-
+	/*
 	Taskspace start;
 	Taskspace finish;
 
@@ -171,5 +185,5 @@ int main()
 
 
 	robot.GoHome();
-
+	*/
 }
