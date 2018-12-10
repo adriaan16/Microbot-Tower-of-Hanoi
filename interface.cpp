@@ -659,7 +659,9 @@ int Microbot::MeasureCubes(Cube c[])//
 {
 	Taskspace t = currentPose.ts;
 	Pose tmpGripHandler;
-	int i = 0;
+	int i = 0, l;
+	Cube tmp;
+
 	while (true)
 	{
 		//Gripper above cube, along x-axis, open 80mm
@@ -721,7 +723,15 @@ int Microbot::MeasureCubes(Cube c[])//
 		t.y += 65;
 		MoveTo(t);
 	}
-
+	for (int k = 1; k <= i; k++) {
+		tmp = c[k];
+		l = k;
+		while (l > 1 && c[l - 1].n > tmp.n) {
+			c[l] = c[l - 1];
+			l--;
+		}
+		c[l] = tmp;
+	}
 	return i;
 }
 
