@@ -140,7 +140,8 @@ public:
 	int PickandPlace(Taskspace start, Taskspace finish, double height, int gripForce);
 	int MeasureCubes(Cube c[]);
 	void TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]);
-
+	void linspace(double a, double b, int n, double v[]);
+	int LineTo(Taskspace f);
 
 private:
 

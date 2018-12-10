@@ -753,6 +753,73 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 	}
 }
 
+
+int Microbot::LineTo(Taskspace f){
+	unsigned int SIZE = 20;
+	double *v = new double[SIZE];
+	double *pitch = new double[SIZE];
+	double *roll = new double[SIZE];
+	double *gripp = new double[SIZE];
+	Pose *tmp = new Pose[SIZE];
+	double RR;
+	Taskspace s = currentPose.ts;
+
+	RR = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
+
+
+	linspace(0, RR, SIZE, v);
+	linspace(s.p, f.p, SIZE, pitch);
+	linspace(s.r, f.r, SIZE, roll);
+	linspace(s.g, f.g, SIZE, gripp);
+
+	for (int i = 0; i < SIZE; i++) {
+		tmp[i].ts.x = s.x + v[i]/RR * (f.x - s.x);
+		tmp[i].ts.y = s.y + v[i]/RR * (f.y - s.y);
+		tmp[i].ts.z = s.z + v[i]/RR * (f.z - s.z);
+		tmp[i].ts.p = pitch[i];
+		tmp[i].ts.r = roll[i];
+		tmp[i].ts.g = gripp[i];
+	}
+
+	delete[] v;
+	delete[] pitch;
+	delete[] roll;
+	delete[] gripp;
+
+
+	for (int i = 0; i < SIZE; i++) {
+		if (SpaceConvertion(tmp[i], tmp[i].ts) <= 0){
+			printf("Unable to Generate Straight line to desired point");
+			return 0;
+		}
+	};
+
+	for (int i = 1; i < SIZE; i++) {
+		SetDelta(tmp[i - 1].js, tmp[i].js);
+		JointToRegister(deltaJoints, delta);
+		SendStep(microbot_speed, delta);
+	}
+
+	lastPose = currentPose;
+	currentPose = tmp[SIZE-1];
+
+	return 1;
+
+}
+
+void Microbot::linspace(double a, double b, int n, double v[]) {
+	double d;
+	d = (b - a) / (n - 1);
+
+	for (int i = 0; i < n; i++) {
+		v[i] = a + i * d;
+	}
+
+}
+
+
+
+
 void UserInterface(Microbot robot) {
 	Taskspace next;
 	Taskspace current;
@@ -783,7 +850,6 @@ void UserInterface(Microbot robot) {
 		buffer << input;
 		buffer >> GUI;
 		std::stringstream().swap(buffer);
-		cin.ignore();
 
 		while ((GUI != 0) && (GUI != 1))
 		{
@@ -792,7 +858,7 @@ void UserInterface(Microbot robot) {
 			buffer << input;
 			buffer >> GUI;
 			std::stringstream().swap(buffer);
-			cin.ignore();
 		}
 	}
 }
+
