@@ -71,7 +71,7 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish,100,-1);
+	robot.PickandPlace(start, finish, 100, -1);
 
 	start.x = 200;
 	start.y = 75;
@@ -172,4 +172,4 @@ int main()
 
 	robot.GoHome();
 
-}// wow hvað þetta er sniðugt
+}
