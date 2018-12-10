@@ -172,4 +172,4 @@ int main()
 
 	robot.GoHome();
 
-}
+}// wow hvað þetta er sniðugt
