@@ -13,10 +13,10 @@ interface.cpp
 using namespace std;
 
 using String = std::string;
-Microbot::Microbot(){
-	
-	port.Open(1,9600);
-	microbot_speed = 235;
+Microbot::Microbot() {
+
+	port.Open(1, 9600);
+	microbot_speed = 234;
 	SendReset();
 
 	home.ts.x = 125;
@@ -36,21 +36,21 @@ Microbot::Microbot(){
 int Microbot::SendStep(int speed, Registerspace del)
 {
 	int i;
-	int ret_num=0;
-	double timer=1000000;
+	int ret_num = 0;
+	double timer = 1000000;
 	char ret[2];
 	char c[80] = "@STE ";
 
-	String spe	{std::to_string( speed )};
-	String m1	{std::to_string( del.r[1] )};
-	String m2	{std::to_string( del.r[2] )};
-	String m3	{std::to_string( del.r[3] )};
-	String m4	{std::to_string( del.r[4] )};
-	String m5	{std::to_string( del.r[5] )};
-	String m6	{std::to_string( del.r[6] )};
-	String m7	{std::to_string( del.r[7] )};
-	
-	
+	String spe{ std::to_string(speed) };
+	String m1{ std::to_string(del.r[1]) };
+	String m2{ std::to_string(del.r[2]) };
+	String m3{ std::to_string(del.r[3]) };
+	String m4{ std::to_string(del.r[4]) };
+	String m5{ std::to_string(del.r[5]) };
+	String m6{ std::to_string(del.r[6]) };
+	String m7{ std::to_string(del.r[7]) };
+
+
 	strcat(c, spe.c_str());
 	strcat(c, ",");
 	strcat(c, m1.c_str());
@@ -63,39 +63,39 @@ int Microbot::SendStep(int speed, Registerspace del)
 	strcat(c, ",");
 	strcat(c, m5.c_str());
 	strcat(c, ",");
-	strcat(c, m6.c_str());	
+	strcat(c, m6.c_str());
 	strcat(c, ",");
-	strcat(c, m7.c_str());	
+	strcat(c, m7.c_str());
 	strcat(c, "\r");
 
 	// print statement for debugging; may be commented out afterwards
-	printf("String = %s\n",c);
+	printf("String = %s\n", c);
 
-	fflush( stdin );
+	fflush(stdin);
 
 	i = strlen(c);
-	port.SendData(c,i);
+	port.SendData(c, i);
 
-	
-	while((ret_num==0) && (timer > 0))
-			{			
-			ret_num = port.ReadData(ret,2);
-			timer = (timer - 0.25);
-			}
-	
-	if(timer <= 0)
+
+	while ((ret_num == 0) && (timer > 0))
+	{
+		ret_num = port.ReadData(ret, 2);
+		timer = (timer - 0.25);
+	}
+
+	if (timer <= 0)
 		printf("Error\n");
-	
-	if(ret_num!=0)
-		{
+
+	if (ret_num != 0)
+	{
 		// print statement for debugging; may be commented out afterwards
-		printf( "Return from Microbot: %c\n", ret[0]);
+		printf("Return from Microbot: %c\n", ret[0]);
 		ret[1] = '\0';
 		i = atoi(ret);
-		}
-	
+	}
+
 	return i;
-	
+
 }
 
 
@@ -103,54 +103,56 @@ int Microbot::SendClose(int speed, int force)
 {
 
 	int i;
-	int ret_num=0;
+	int ret_num = 0;
 	char ret[2];
 	char c[80] = "@CLO ";
 
 	Registerspace r;
 
-	String spe=std::to_string(speed);
+	String spe = std::to_string(speed);
 
 	if (speed != -1)
 	{
 		strcat(c, spe.c_str());
-	
+
 	}
 
 	strcat(c, "\r");
 
-	printf("String = %s\n",c);
+	printf("String = %s\n", c);
 
-	fflush( stdin );
+	fflush(stdin);
 
 	i = strlen(c);
 
-	port.SendData(c,i);
+	port.SendData(c, i);
 
 	i = 0;
 
-	while(i==0)
-		i = port.ReadData(ret,2);
+	while (i == 0)
+		i = port.ReadData(ret, 2);
 
 	i = 1;
 
-if (force != -1)
+	if (force != -1)
 	{
 
-	if (speed == -1)
-	{speed = 221;}
+		if (speed == -1)
+		{
+			speed = 221;
+		}
 
-	r.r[1] = 0;
-	r.r[2] = 0;
-	r.r[3] = 0;
-	r.r[4] = 0;
-	r.r[5] = 0;
-	r.r[6] = -10*force;
+		r.r[1] = 0;
+		r.r[2] = 0;
+		r.r[3] = 0;
+		r.r[4] = 0;
+		r.r[5] = 0;
+		r.r[6] = -10 * force;
 
-	i = SendStep( speed, r );
+		i = SendStep(speed, r);
 	}
 
-return i;		
+	return i;
 
 }
 
@@ -158,90 +160,90 @@ return i;
 
 int Microbot::SendRead(Registerspace &read)
 {
-	int	i, count=1;
-	int a=0;
-	int ret_num=0;
+	int	i, count = 1;
+	int a = 0;
+	int ret_num = 0;
 
 
 	char c[10] = "@READ\r";
 	char d[80];
 
 	i = strlen(c);
-	port.SendData(c,i);
+	port.SendData(c, i);
 
-	while(ret_num==0)
-		{			
-			
-			ret_num = port.ReadData(d,1);
-	
-		}
-	
+	while (ret_num == 0)
+	{
 
-	while(a<2)
+		ret_num = port.ReadData(d, 1);
+
+	}
+
+
+	while (a < 2)
 	{
 		ret_num = 0;
 
-		while(ret_num==0)
-			ret_num = port.ReadData(d+count,1);
-		
-		if(d[count]=='\r')
+		while (ret_num == 0)
+			ret_num = port.ReadData(d + count, 1);
+
+		if (d[count] == '\r')
 			a++;
 
 		count++;
-	
+
 	}
-	
-	d[count-1] = '\0';
 
-	int index=2;
-	int index1=1;
+	d[count - 1] = '\0';
 
-	while(d[index]!='\0')
+	int index = 2;
+	int index1 = 1;
+
+	while (d[index] != '\0')
 	{
 
-	read.r[index1]	 = atoi(d+index);
+		read.r[index1] = atoi(d + index);
 
-	index1++;
+		index1++;
 
-		while(d[index]!=','&&d[index]!='\0')
+		while (d[index] != ','&&d[index] != '\0')
 			index++;
 
-		if(d[index]==',')
+		if (d[index] == ',')
 			index++;
 	}
 
-	printf("Motor steps in ascii =  %s\n", d+2);
-	
-	
+	printf("Motor steps in ascii =  %s\n", d + 2);
+
+
 
 	return 0;
 }
 
 
 int Microbot::SendSet(int speed)
-{	
+{
 	int	i;
-	int ret_num=0;
+	int ret_num = 0;
 	char ret[2];
 	char c[15] = "@SET";
-	
-	std::string spe=std::to_string(speed);
-	
+
+	std::string spe = std::to_string(speed);
+
 	strcat(c, spe.c_str());
 	strcat(c, ",");
 	strcat(c, "\r");
-	
-	printf("String = %s\n",c);
-	
+
+	printf("String = %s\n", c);
+
 	i = strlen(c);
-	port.SendData(c,i);
-	
-	while(ret_num==0)
-		ret_num = port.ReadData(ret,2);
+	port.SendData(c, i);
+
+	while (ret_num == 0)
+		ret_num = port.ReadData(ret, 2);
 
 	ret[1] = '\0';
 	i = atoi(ret);
-	
+
 	return i;
 }
 
@@ -249,28 +251,28 @@ int Microbot::SendReset()
 {
 
 	int i;
-	int ret_num=0;
+	int ret_num = 0;
 	char ret[2];
 	char c[80] = "@RESET ";
 
-	
+
 	strcat(c, "\r");
 
-	printf("String = %s\n",c);
+	printf("String = %s\n", c);
 
-	fflush( stdin );
+	fflush(stdin);
 
 	i = strlen(c);
 
-	port.SendData(c,i);
+	port.SendData(c, i);
 
 	i = 0;
 
-	while(i==0)
-		i = port.ReadData(ret,2);
+	while (i == 0)
+		i = port.ReadData(ret, 2);
 
 	i = 1;
-return i;		
+	return i;
 
 }
 //############################# Our Stuff #################################
@@ -286,18 +288,18 @@ int Microbot::InverseKinematics(Taskspace p, Jointspace &j) {
 	double P = p.p * PI / 180.0;
 	double R = p.r * PI / 180.0;
 	double G = p.g;
-	double RR, R0, Z0, b,h, beta, alpha;
+	double RR, R0, Z0, b, h, beta, alpha;
 	Jointspace tmp = j;
 
-	RR = sqrt(X*X + Y*Y);
+	RR = sqrt(X*X + Y * Y);
 	R0 = RR - LL * cos(P);
 	Z0 = Z - LL * sin(P) - H;
-	b = 0.5 * sqrt(R0*R0 + Z0*Z0);
-	h = sqrt(L*L - b*b);
-		if (isnan(h)) {
-			printf("ERROR: ATTEMTING TO MOVE OUTSIDE WORKSPACE \n");
-			return 0;
-		};
+	b = 0.5 * sqrt(R0*R0 + Z0 * Z0);
+	h = sqrt(L*L - b * b);
+	if (isnan(h)) {
+		printf("ERROR: ATTEMTING TO MOVE OUTSIDE WORKSPACE \n");
+		return 0;
+	};
 
 
 	alpha = atan2(h, b);
@@ -311,7 +313,7 @@ int Microbot::InverseKinematics(Taskspace p, Jointspace &j) {
 	tmp.j[3] = beta - alpha;
 	tmp.j[4] = P - R - R1 * tmp.j[1];
 	tmp.j[5] = P + R + R1 * tmp.j[1];
-	
+
 	tmp.j[6] = G;
 
 	int check = CheckWorkspaceLimits(tmp);
@@ -327,14 +329,14 @@ int Microbot::InverseKinematics(Taskspace p, Jointspace &j) {
 
 int Microbot::ForwardKinematics(Jointspace j, Taskspace &t) {
 	double RR;
-	t.p =( (j.j[5] + j.j[4]) / 2.0 + R1 * j.j[1]) * (180.0 / PI);
-	t.r =( (j.j[5] - j.j[4]) / 2.0 - R1 * j.j[1]) * (180.0 / PI);
+	t.p = ((j.j[5] + j.j[4]) / 2.0 + R1 * j.j[1]) * (180.0 / PI);
+	t.r = ((j.j[5] - j.j[4]) / 2.0 - R1 * j.j[1]) * (180.0 / PI);
 	RR = (L * cos(j.j[2]) + L * cos(j.j[3]) + LL * cos(t.p));
-	
+
 	t.x = RR * cos(j.j[1]);
 	t.y = RR * sin(j.j[1]);
 	t.z = H + L * sin(j.j[2]) + L * sin(j.j[3]) + LL * sin(t.p);
-	
+
 	t.g = j.j[6];
 
 	//R = R * 180 / pi
@@ -372,28 +374,28 @@ int Microbot::RegisterToJoint(Registerspace r, Jointspace &j) {
 
 int Microbot::CheckWorkspaceLimits(Jointspace j) {
 
-// Base
-	if ( j.j[1] * 180.0 / PI > 90 || j.j[1] * 180.0 / PI < -90 ) {
+	// Base
+	if (j.j[1] * 180.0 / PI > 90 || j.j[1] * 180.0 / PI < -90) {
 		printf("BASE ANGLE EXCEEDED \n");
 		return BASE_ANGLE_EXCEEDED;
 	};
-// Shoulder
+	// Shoulder
 	if ((j.j[2] * 180.0 / PI > 144) || (j.j[2] * 180.0 / PI < -35)) {
 		printf("SHOULDER_ANGLE_EXCEEDED \n");
 		return SHOULDER_ANGLE_EXCEEDED;
 	};
-// Elbow
+	// Elbow
 	if (j.j[3] * 180.0 / PI > 0 || j.j[3] * 180.0 / PI < -149) {
 		printf("ELBOW_ANGLE_EXCEEDED \n");
 		return ELBOW_ANGLE_EXCEEDED;
 	};
-// Wrist Pitch
-	if ((j.j[5] + j.j[4])*0.5 * 180.0 / PI > 90 ||  (j.j[5] + j.j[4])*0.5 * 180.0 / PI < -90){
+	// Wrist Pitch
+	if ((j.j[5] + j.j[4])*0.5 * 180.0 / PI > 90 || (j.j[5] + j.j[4])*0.5 * 180.0 / PI < -90) {
 		return PITCH_ANGLE_EXCEEDED;
 		printf("PITCH_ANGLE_EXCEEDED \n");
 	};
 
-// Wrist Roll
+	// Wrist Roll
 	if ((j.j[5] - j.j[4])*0.5 * 180.0 / PI > 270 || (j.j[5] - j.j[4])*0.5 * 180.0 / PI < -270) {
 		return ROLL_ANGLE_EXCEEDED;
 		printf("ROLL_ANGLE_EXCEEDED \n");
@@ -416,7 +418,7 @@ bool Microbot::CheckWorkspaceLimits(Taskspace t) {
 		noError = false;
 	}
 
-	if (sqrt(t.x*t.x+t.y*t.y)<= BODY_RADIUS && t.z <= ROBOT_BASE_HEIGHT) {
+	if (sqrt(t.x*t.x + t.y*t.y) <= BODY_RADIUS && t.z <= ROBOT_BASE_HEIGHT) {
 		printf("ERROR: ATTEMPTING TO MOVE END EFFECTOR INSIDE BODY RADIUS \n");
 		noError = false;
 	}
@@ -433,7 +435,7 @@ bool Microbot::CheckWorkspaceLimits(Taskspace t) {
 
 
 int Microbot::SetDelta(Registerspace start, Registerspace finish) {
-	for (int i = 1; i <= 8;i++) {
+	for (int i = 1; i <= 8; i++) {
 		delta.r[i] = finish.r[i] - start.r[i];
 	};
 
@@ -487,8 +489,8 @@ int  Microbot::MoveTo(Taskspace &t) {
 	JointToRegister(deltaJoints, delta);
 
 
-	SendStep(microbot_speed,delta);
-	
+	SendStep(microbot_speed, delta);
+
 	lastPose = currentPose;
 	currentPose = tmp;
 
@@ -513,8 +515,8 @@ void Microbot::CurrentPosition(Taskspace &t) {
 
 
 int Microbot::SpaceConvertion(Pose &pose, Taskspace t) {
-	
-	
+
+
 	Pose tmp = pose;
 	tmp.ts = t;
 
@@ -537,7 +539,7 @@ int Microbot::SpaceConvertion(Pose &pose, Taskspace t) {
 }
 
 int Microbot::SpaceConvertion(Pose &pose, Registerspace r) {
-	
+
 	Pose tmp = pose;
 	tmp.rs = r;
 	RegisterToJoint(tmp.rs, tmp.js);
@@ -554,8 +556,8 @@ int Microbot::SpaceConvertion(Pose &pose, Registerspace r) {
 
 	pose = tmp;
 
-		return 1;
-	}
+	return 1;
+}
 
 int Microbot::SpaceConvertion(Pose &pose, Jointspace j) {
 
@@ -564,7 +566,7 @@ int Microbot::SpaceConvertion(Pose &pose, Jointspace j) {
 	JointToRegister(tmp.js, tmp.rs);
 	ForwardKinematics(tmp.js, tmp.ts);
 
-		int check1 = CheckWorkspaceLimits(tmp.ts);
+	int check1 = CheckWorkspaceLimits(tmp.ts);
 	if (check1 <= 0) {
 		return 0;
 	};
@@ -581,22 +583,20 @@ int Microbot::SpaceConvertion(Pose &pose, Jointspace j) {
 //#################### TOWER OF HANOI HANDLING ####################################
 
 int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
-	
-	int extraHeight = 25;
+
+	int extraHeight = 75;
 	int talestTower = 25 * 6;
 	int gripper = 0;
 
 	Pose tmpGripHandler;
 	Pose tmp;
-	
+
 	tmp.ts = start;
 
 
-	
 	//move above location 1 pre
 
 	tmp.ts.z += extraHeight;
-
 	MoveTo(tmp.ts);
 
 
@@ -607,20 +607,23 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
 	MoveTo(tmp.ts);
 
 	//close gripper
-	
+
 	SendReset();
 
 	printf("\n Closing Gripper");
 
-	SendClose(238, -1);
+	SendClose(235, -1);
 
 	SendRead(tmpGripHandler.rs);
 	SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
-	
+
 	gripper = tmp.ts.g + tmpGripHandler.ts.g;
 
+
+	cout << "Gripper: " << tmp.ts.g << " + " << tmpGripHandler.ts.g << " = " << gripper << endl;
+
 	//move above location 1 post
-	
+
 	tmp.ts.z += extraHeight;
 	tmp.ts.g = gripper;
 	MoveTo(tmp.ts);
@@ -638,13 +641,13 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
 	MoveTo(tmp.ts);
 
 	//open gripper
-	tmp.ts.g = tmp.ts.g+10;
+	tmp.ts.g = tmp.ts.g + 30;
 	MoveTo(tmp.ts);
 
 	//move to location 2 post
-	tmp.ts = finish;
+	//tmp.ts = finish;
 	tmp.ts.z += extraHeight;
 	MoveTo(tmp.ts);
-	
+
 	return 1;
 }

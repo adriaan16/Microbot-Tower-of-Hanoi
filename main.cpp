@@ -3,12 +3,12 @@
 using namespace std;
 
 int main()
-{	
+{
 	Microbot robot;				// Local variable of the microbot class
-    Registerspace delta;
+	Registerspace delta;
 	Taskspace next;
 	Taskspace current;			// Local variable for input of motor steps
-    int spe=235;				// Motor speed; should not be higher than 240
+	int spe = 235;				// Motor speed; should not be higher than 240
 	string input;
 	stringstream buffer;
 	int GUI = 1;
@@ -59,19 +59,119 @@ int main()
 
 	start.x = 200;
 	start.y = 75;
-	start.z = 15;
+	start.z = 55;
 	start.p = -90;
 	start.r = 0;
-	start.g = 50;
+	start.g = 70;
 
 	finish.x = 200;
 	finish.y = -75;
-	finish.z = 15;
+	finish.z = 5;
 	finish.p = -90;
 	finish.r = 0;
-	finish.g = 50;
+	finish.g = 70;
 
 	robot.PickandPlace(start, finish);
+
+	start.x = 200;
+	start.y = 75;
+	start.z = 32;
+	start.p = -90;
+	start.r = 0;
+	start.g = 70;
+
+	finish.x = 200;
+	finish.y = 0;
+	finish.z = 5;
+	finish.p = -90;
+	finish.r = 0;
+	finish.g = 70;
+
+	robot.PickandPlace(start, finish);
+
+	start.x = 200;
+	start.y = -75;
+	start.z = 5;
+	start.p = -90;
+	start.r = 0;
+	start.g = 70;
+
+	finish.x = 200;
+	finish.y = 0;
+	finish.z = 35;
+	finish.p = -90;
+	finish.r = 0;
+	finish.g = 70;
+
+	robot.PickandPlace(start, finish);
+
+	start.x = 200;
+	start.y = 75;
+	start.z = 5;
+	start.p = -90;
+	start.r = 0;
+	start.g = 70;
+
+	finish.x = 200;
+	finish.y = -75;
+	finish.z = 5;
+	finish.p = -90;
+	finish.r = 0;
+	finish.g = 70;
+
+	robot.PickandPlace(start, finish);
+
+	start.x = 200;
+	start.y = 0;
+	start.z = 32;
+	start.p = -90;
+	start.r = 0;
+	start.g = 70;
+
+	finish.x = 200;
+	finish.y = 75;
+	finish.z = 5;
+	finish.p = -90;
+	finish.r = 0;
+	finish.g = 70;
+
+	robot.PickandPlace(start, finish);
+
+	start.x = 200;
+	start.y = 0;
+	start.z = 5;
+	start.p = -90;
+	start.r = 0;
+	start.g = 70;
+
+	finish.x = 200;
+	finish.y = -75;
+	finish.z = 35;
+	finish.p = -90;
+	finish.r = 0;
+	finish.g = 70;
+
+	robot.PickandPlace(start, finish);
+
+	start.x = 200;
+	start.y = 75;
+	start.z = 5;
+	start.p = -90;
+	start.r = 0;
+	start.g = 70;
+
+	finish.x = 200;
+	finish.y = -75;
+	finish.z = 60;
+	finish.p = -90;
+	finish.r = 0;
+	finish.g = 70;
+
+	robot.PickandPlace(start, finish);
+
+
+
+
 	robot.GoHome();
 
 

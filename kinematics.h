@@ -6,7 +6,7 @@
 
 	Last revision date : 2-4-99 by Jamie Stultz
 	Last revision date : 10-11-2018 by Scott Harding: Replaced all Pointer function parms with type Reference
-		so function args do not need to be passed using address-of "&" operator, e.g., InverseKinematics(t,&j) becomes 
+		so function args do not need to be passed using address-of "&" operator, e.g., InverseKinematics(t,&j) becomes
 		InverseKinematics(t,j).
 
 */
@@ -57,65 +57,65 @@
 
 
 // Public Data Structures
-	struct Taskspace
-	{
-		double x,y,z,p,r,g;
-	}; typedef struct Taskspace Taskspace;
+struct Taskspace
+{
+	double x, y, z, p, r, g;
+}; typedef struct Taskspace Taskspace;
 
-	struct Jointspace
-	{
-		double j[7];
-	}; typedef struct Jointspace Jointspace;
+struct Jointspace
+{
+	double j[7];
+}; typedef struct Jointspace Jointspace;
 
-	struct Registerspace
-	{
-		int r[9];
-	}; typedef struct Registerspace Registerspace;
+struct Registerspace
+{
+	int r[9];
+}; typedef struct Registerspace Registerspace;
 
-	struct Pose
-	{
-		Taskspace ts;
-		Jointspace js;
-		Registerspace rs;
-	}; typedef struct Pose Pose;
+struct Pose
+{
+	Taskspace ts;
+	Jointspace js;
+	Registerspace rs;
+}; typedef struct Pose Pose;
 
-	struct Cube
-	{
-		int n;
-		int size;
-		Taskspace ts;
-		Jointspace js;
-		Registerspace rs;
-	}; typedef struct Cube Cube;
+struct Cube
+{
+	int n;
+	int size;
+	Taskspace ts;
+	Jointspace js;
+	Registerspace rs;
+}; typedef struct Cube Cube;
 
-	struct Tower
-	{
-		int n;
-		int height;
-		Taskspace ts;
-		Jointspace js;
-		Registerspace rs;
-	}; typedef struct Tower Tower;
+struct Tower
+{
+	int n;
+	int height;
+	Taskspace ts;
+	Jointspace js;
+	Registerspace rs;
+}; typedef struct Tower Tower;
 
 
-    struct IOspace
-	{
-		int lastkey;
-		int enc;
-		int open;
-		int ctrl[4];
-		int latch;
-		int reg;
-	}; typedef struct IOspace IOspace;
+struct IOspace
+{
+	int lastkey;
+	int enc;
+	int open;
+	int ctrl[4];
+	int latch;
+	int reg;
+}; typedef struct IOspace IOspace;
 class Microbot
 {
 public:
 
-// Constructors
+	// Constructors
 	Microbot();
 	Microbot(Taskspace home);
 
-// Public Member Functions
+	// Public Member Functions
 	int MoveTo(Taskspace &t);
 	int Error(int);
 	void SetSpeed(int);
@@ -126,21 +126,21 @@ public:
 	int SendClose(int speed, int force);
 	int SendRead(Registerspace &read);
 	int SendSet(int speed);
-    int SendReset();
+	int SendReset();
 	int SetDelta(Registerspace start, Registerspace finish);
 	int SetDelta(Jointspace start, Jointspace finish);
 	void GoHome();
 
 	int CheckWorkspaceLimits(Jointspace j);
 	bool CheckWorkspaceLimits(Taskspace t);
-	
+
 	int PickandPlace(Taskspace start, Taskspace finish);
 
 
 
 private:
-	
-// Private Data Members
+
+	// Private Data Members
 	CSerial port;
 	Pose home;
 	Pose currentPose;
@@ -149,11 +149,11 @@ private:
 	Registerspace delta;
 	int microbot_speed;
 
-// Private Utility Member Functions
+	// Private Utility Member Functions
 	double ABS(double);
 	int ROUND(double);
 
-// Private Kinematic Member Functions
+	// Private Kinematic Member Functions
 	void SetTaskspace(Taskspace t);
 	void SetJointspace(Jointspace j);
 	void SetRegisterspace(Registerspace r);
@@ -161,7 +161,7 @@ private:
 	int ForwardKinematics(Jointspace j, Taskspace &t);
 	int JointToRegister(Jointspace j, Registerspace &r);
 	int RegisterToJoint(Registerspace r, Jointspace &j);
-	
+
 	int SpaceConvertion(Pose &pose, Taskspace t);
 	int SpaceConvertion(Pose &pose, Registerspace r);
 	int SpaceConvertion(Pose &pose, Jointspace j);
