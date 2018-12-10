@@ -57,6 +57,8 @@ const int CUBE[] = { 0,30,40,50,60,70 };
 
 
 
+
+
 // Public Data Structures
 struct Taskspace
 {
@@ -135,9 +137,11 @@ public:
 	int CheckWorkspaceLimits(Jointspace j);
 	bool CheckWorkspaceLimits(Taskspace t);
 
-	int PickandPlace(Taskspace start, Taskspace finish, double height, double gripForce);
+	int PickandPlace(Taskspace start, Taskspace finish, double height, int gripForce);
 	int MeasureCubes(Cube c[]);
-
+	void TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]);
+	void linspace(double a, double b, int n, double v[]);
+	int LineTo(Taskspace f);
 
 private:
 
@@ -167,3 +171,6 @@ private:
 	int SpaceConvertion(Pose &pose, Registerspace r);
 	int SpaceConvertion(Pose &pose, Jointspace j);
 };
+
+//Other functions
+void UserInterface(Microbot robot);
