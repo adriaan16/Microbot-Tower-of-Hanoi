@@ -724,3 +724,5 @@ int Microbot::MeasureCubes(Cube c[])//
 
 	return i;
 }
+
+// Gleðileg jól
