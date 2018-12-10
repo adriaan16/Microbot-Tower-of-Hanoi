@@ -134,7 +134,7 @@ public:
 	int CheckWorkspaceLimits(Jointspace j);
 	bool CheckWorkspaceLimits(Taskspace t);
 
-	int PickandPlace(Taskspace start, Taskspace finish);
+	int PickandPlace(Taskspace start, Taskspace finish, double height, double gripForce);
 
 
 

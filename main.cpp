@@ -51,7 +51,7 @@ int main()
 	*/
 
 
-
+	//adding test comment
 
 
 	Taskspace start;
@@ -71,7 +71,7 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish);
+	robot.PickandPlace(start, finish,100,-1);
 
 	start.x = 200;
 	start.y = 75;
@@ -87,7 +87,7 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish);
+	robot.PickandPlace(start, finish, 100, -1);
 
 	start.x = 200;
 	start.y = -75;
@@ -103,7 +103,7 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish);
+	robot.PickandPlace(start, finish, 100, -1);
 
 	start.x = 200;
 	start.y = 75;
@@ -119,7 +119,7 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish);
+	robot.PickandPlace(start, finish, 100, -1);
 
 	start.x = 200;
 	start.y = 0;
@@ -135,7 +135,7 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish);
+	robot.PickandPlace(start, finish, 100, -1);
 
 	start.x = 200;
 	start.y = 0;
@@ -151,7 +151,7 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish);
+	robot.PickandPlace(start, finish, 100, -1);
 
 	start.x = 200;
 	start.y = 75;
@@ -167,12 +167,9 @@ int main()
 	finish.r = 0;
 	finish.g = 70;
 
-	robot.PickandPlace(start, finish);
-
-
+	robot.PickandPlace(start, finish, 100, -1);
 
 
 	robot.GoHome();
-
 
 }

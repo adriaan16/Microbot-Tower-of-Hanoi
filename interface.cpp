@@ -582,7 +582,7 @@ int Microbot::SpaceConvertion(Pose &pose, Jointspace j) {
 
 //#################### TOWER OF HANOI HANDLING ####################################
 
-int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
+int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, double gripForce) {
 
 	int extraHeight = 75;
 	int talestTower = 25 * 6;
@@ -596,7 +596,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
 
 	//move above location 1 pre
 
-	tmp.ts.z += extraHeight;
+	tmp.ts.z = height;
 	MoveTo(tmp.ts);
 
 
@@ -612,7 +612,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
 
 	printf("\n Closing Gripper");
 
-	SendClose(235, -1);
+	SendClose(235, gripForce);
 
 	SendRead(tmpGripHandler.rs);
 	SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
@@ -624,13 +624,13 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
 
 	//move above location 1 post
 
-	tmp.ts.z += extraHeight;
+	tmp.ts.z = height;
 	tmp.ts.g = gripper;
 	MoveTo(tmp.ts);
 
 	//move above location 2 pre
 	tmp.ts = finish;
-	tmp.ts.z += extraHeight;
+	tmp.ts.z = height;
 	tmp.ts.g = gripper;
 
 	MoveTo(tmp.ts);
@@ -646,7 +646,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish) {
 
 	//move to location 2 post
 	//tmp.ts = finish;
-	tmp.ts.z += extraHeight;
+	tmp.ts.z = height;
 	MoveTo(tmp.ts);
 
 	return 1;
