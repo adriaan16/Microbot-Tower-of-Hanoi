@@ -617,16 +617,20 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, dou
 
 	SendRead(tmpGripHandler.rs);
 	SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
-
+	
 	gripper = tmp.ts.g + tmpGripHandler.ts.g;
-
-
+	
+	tmp.ts.g = gripper;
+	SpaceConvertion(currentPose, tmp.ts);
 	cout << "Gripper: " << tmp.ts.g << " + " << tmpGripHandler.ts.g << " = " << gripper << endl;
 
 	//move above location 1 post pickup
 
 	tmp.ts.z = height;
-	tmp.ts.g = gripper;
+	
+
+
+
 	MoveTo(tmp.ts);
 
 	//move above location 2 pre placement
