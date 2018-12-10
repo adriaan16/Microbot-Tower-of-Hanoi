@@ -21,11 +21,12 @@ int main()
 	next = {175,-125,40,-90,90,0};
 	robot.MoveTo(next);
 	robot.MeasureCubes(banani);
-	robot.GoHome();
 	for (int i = 1; i <= 3; i++)
 	{
-		cout << banani[i].n << " ";
+		robot.PickandPlace();
 	}
+	robot.GoHome();
+	
 	/*
 	robot.SetSpeed(spe);
 	robot.CurrentPosition(current);
