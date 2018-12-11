@@ -69,7 +69,7 @@ int Microbot::SendStep(int speed, Registerspace del)
 	strcat(c, "\r");
 
 	// print statement for debugging; may be commented out afterwards
-	printf("String = %s\n", c);
+	//printf("String = %s\n", c);
 
 	fflush(stdin);
 
@@ -89,7 +89,7 @@ int Microbot::SendStep(int speed, Registerspace del)
 	if (ret_num != 0)
 	{
 		// print statement for debugging; may be commented out afterwards
-		printf("Return from Microbot: %c\n", ret[0]);
+		//printf("Return from Microbot: %c\n", ret[0]);
 		ret[1] = '\0';
 		i = atoi(ret);
 	}
@@ -119,7 +119,7 @@ int Microbot::SendClose(int speed, int force)
 
 	strcat(c, "\r");
 
-	printf("String = %s\n", c);
+	//printf("String = %s\n", c);
 
 	fflush(stdin);
 
@@ -212,7 +212,7 @@ int Microbot::SendRead(Registerspace &read)
 			index++;
 	}
 
-	printf("Motor steps in ascii =  %s\n", d + 2);
+	//printf("Motor steps in ascii =  %s\n", d + 2);
 
 
 
@@ -612,7 +612,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 
 	SendReset();
 
-	printf("\n Closing Gripper");
+	//printf("\n Closing Gripper");
 
 	SendClose(235, gripForce);
 
@@ -643,7 +643,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 	MoveTo(tmp.ts);
 
 	//open gripper
-	tmp.ts.g = tmp.ts.g + 30;
+	tmp.ts.g = tmp.ts.g + 10;
 	MoveTo(tmp.ts);
 
 	//move to location 2 post placement
@@ -757,15 +757,28 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		cout << "Move " << moves++ << ": Cube " << n;
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
+		//printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
+		//printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
+	/*	int height = t[1].ts.z;
+		if (t[2].ts.z > height)
+		{
+			height = t[2].ts.z;
+		}
+		if (t[3].ts.z > height)
+		{
+			height = t[3].ts.z;
+		}*/
 
-		printf("Cube &g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
-		printf("Tower %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
-
-			PickandPlace(c[n].ts, t[d].ts, 100, -1);
-			c[n].ts = currentPose.ts;
-			t[s].ts.z -= 25;
-			t[d].ts.z += 25;
-
+		PickandPlace(c[n].ts, t[d].ts, 100, -1);
+		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
+		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
+		c[n].ts.x = currentPose.ts.x;
+		c[n].ts.y = currentPose.ts.y;
+		//c[n].ts.p = currentPose.ts.p;
+		//c[n].ts.r = currentPose.ts.r;
+		c[n].ts.z = t[d].ts.z;
+		t[s].ts.z -= 25;
+		t[d].ts.z += 25;
 
 		TowerofHanoi(n - 1, i, s, d, moves, c, t);
 	}
@@ -775,7 +788,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 int Microbot::LineTo(Taskspace f){
 
 	double norm;
-	double multiple = 10.0;
+	double multiple = 20.0;
 	int SIZE;
 	Taskspace s = currentPose.ts;
 
@@ -791,7 +804,7 @@ int Microbot::LineTo(Taskspace f){
 
 	linspace(0, 1, SIZE, a);
 
-	cout <<"Number of steps: " << SIZE;
+	cout <<"Number of steps: " << SIZE-1;
 
 	for (int i = 0; i < SIZE; i++) {
 		tmp[i].ts.x = s.x + a[i] * (f.x - s.x);
