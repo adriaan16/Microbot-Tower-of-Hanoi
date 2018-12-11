@@ -752,18 +752,46 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 }
 
 void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]) {
+	int height;
+	
+	if (i == 2) {
+		if ((t[1].ts.z > t[2].ts.z) && (t[1].ts.z > t[3].ts.z)) {
+			height = t[1].ts.z;
+		}
+		else if ((t[2].ts.z > t[1].ts.z) && (t[2].ts.z > t[3].ts.z)) {
+			height = t[2].ts.z;
+		}
+		else {
+			height = t[3].ts.z;
+		}
+	}
+	else {
+		if (t[s].ts.z > t[d].ts.z) {
+			height = t[s].ts.z;
+		}
+		else {
+			height = t[d].ts.z;
+		}
+	};
+	
+	
 	if (n > 0) {
 		TowerofHanoi(n - 1, s, d, i, moves, c, t);
 		cout << "Move " << moves++ << ": Cube " << n;
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
 
-		printf("Cube &g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
+		printf("Cube %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
 		printf("Tower %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
 		PickandPlace(c[n].ts, t[d].ts, 100, -1);
 		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
 		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
+		
+
+
+
+
 		c[n].ts.x = currentPose.ts.x;
 		c[n].ts.y = currentPose.ts.y;
 		//c[n].ts.p = currentPose.ts.p;
