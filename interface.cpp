@@ -758,6 +758,9 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
 
+		printf("Cube &g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
+		printf("Tower %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
+
 			PickandPlace(c[n].ts, t[d].ts, 100, -1);
 			c[n].ts = currentPose.ts;
 			t[s].ts.z -= 25;
@@ -770,13 +773,21 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 
 
 int Microbot::LineTo(Taskspace f){
-	const int SIZE = 20;
-	double *a = new double[SIZE];
-	Pose *tmp = new Pose[SIZE];
+
+	double RR;
+	double multiple = 10.0;
+	int SIZE;
 	Taskspace s = currentPose.ts;
 
-	
+	RR = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
+	SIZE = floor(((RR + multiple / 2.0) / multiple));
+
+	double *a = new double[SIZE];
+	Pose *tmp = new Pose[SIZE];
+
 	linspace(0, 1, SIZE, a);
+
+	cout <<"Number of steps: " << SIZE;
 
 	for (int i = 0; i < SIZE; i++) {
 		tmp[i].ts.x = s.x + a[i] * (f.x - s.x);
