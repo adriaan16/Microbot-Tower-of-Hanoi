@@ -588,7 +588,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 
 	int extraHeight = 75;
 	int talestTower = 25 * 6;
-	int gripper = 0;
+	double gripper = 0;
 
 	Pose tmpGripHandler;
 	Pose tmp;
@@ -755,36 +755,24 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 
 
 int Microbot::LineTo(Taskspace f){
-	unsigned int SIZE = 20;
-	double *v = new double[SIZE];
-	double *pitch = new double[SIZE];
-	double *roll = new double[SIZE];
-	double *gripp = new double[SIZE];
+	const int SIZE = 20;
+	double *a = new double[SIZE];
 	Pose *tmp = new Pose[SIZE];
-	double RR;
 	Taskspace s = currentPose.ts;
 
-	RR = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
-
-
-	linspace(0, RR, SIZE, v);
-	linspace(s.p, f.p, SIZE, pitch);
-	linspace(s.r, f.r, SIZE, roll);
-	linspace(s.g, f.g, SIZE, gripp);
+	
+	linspace(0, 1, SIZE, a);
 
 	for (int i = 0; i < SIZE; i++) {
-		tmp[i].ts.x = s.x + v[i]/RR * (f.x - s.x);
-		tmp[i].ts.y = s.y + v[i]/RR * (f.y - s.y);
-		tmp[i].ts.z = s.z + v[i]/RR * (f.z - s.z);
-		tmp[i].ts.p = pitch[i];
-		tmp[i].ts.r = roll[i];
-		tmp[i].ts.g = gripp[i];
-	}
+		tmp[i].ts.x = s.x + a[i] * (f.x - s.x);
+		tmp[i].ts.y = s.y + a[i] * (f.y - s.y);
+		tmp[i].ts.z = s.z + a[i] * (f.z - s.z);
+		tmp[i].ts.p = s.p + a[i] * (f.p - s.p);
+		tmp[i].ts.r = s.r + a[i] * (f.r - s.r);
+		tmp[i].ts.g = s.g + a[i] * (f.g - s.g);
+	};
 
-	delete[] v;
-	delete[] pitch;
-	delete[] roll;
-	delete[] gripp;
+	delete[] a;
 
 
 	for (int i = 0; i < SIZE; i++) {
@@ -798,7 +786,7 @@ int Microbot::LineTo(Taskspace f){
 		SetDelta(tmp[i - 1].js, tmp[i].js);
 		JointToRegister(deltaJoints, delta);
 		SendStep(microbot_speed, delta);
-	}
+	};
 
 	lastPose = currentPose;
 	currentPose = tmp[SIZE-1];
@@ -813,8 +801,7 @@ void Microbot::linspace(double a, double b, int n, double v[]) {
 
 	for (int i = 0; i < n; i++) {
 		v[i] = a + i * d;
-	}
-
+	};
 }
 
 
