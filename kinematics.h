@@ -142,7 +142,7 @@ public:
 	int SortCubes(Cube c[], Tower &tower, int NumberOfCubes);
 	void TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]);
 	void linspace(double a, double b, int n, double v[]);
-	int LineTo(Taskspace f);
+	int LineTo(Taskspace f,double stepSize);
 
 private:
 

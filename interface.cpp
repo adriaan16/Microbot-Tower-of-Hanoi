@@ -754,7 +754,7 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]) {
 	if (n > 0) {
 		TowerofHanoi(n - 1, s, d, i, moves, c, t);
-		int height;
+		double height;
 		if (i == 2) {
 			if ((t[s].ts.z > t[i].ts.z) && (t[s].ts.z > t[d].ts.z + 25)) {
 				height = t[s].ts.z;
@@ -779,8 +779,8 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
 
-		printf("Cube %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
-		printf("Tower %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
+		printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
+		printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
 		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
 		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
@@ -799,15 +799,18 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 }
 
 
-int Microbot::LineTo(Taskspace f){
+int Microbot::LineTo(Taskspace f, double stepSize){
 
 	double norm;
-	double multiple = 20.0;
 	int SIZE;
 	Taskspace s = currentPose.ts;
 
+	if (stepSize <= 0) {
+		stepSize = 20.0;
+	}
+
 	norm = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
-	SIZE = ceil(((norm + multiple / 2.0) / multiple));
+	SIZE = int(ceil(((norm + stepSize / 2.0) / stepSize)));
 
 	if (SIZE == 1) {
 		SIZE++;
@@ -818,7 +821,7 @@ int Microbot::LineTo(Taskspace f){
 
 	linspace(0, 1, SIZE, a);
 
-	cout <<"Number of steps: " << SIZE;
+	cout <<"Number of steps: " << SIZE-1;
 
 	for (int i = 0; i < SIZE; i++) {
 		tmp[i].ts.x = s.x + a[i] * (f.x - s.x);
@@ -864,46 +867,100 @@ void Microbot::linspace(double a, double b, int n, double v[]) {
 
 
 
-
 void UserInterface(Microbot robot) {
 	Taskspace next;
-	Taskspace current;
+	Taskspace current = { 125,0,0,-90,0,0 };
 	int GUI = 1;
 	string input;
 	stringstream buffer;
+	char choice;
+	char choice2;
+	double stepSize = -1;
 
-	robot.CurrentPosition(current);
+	printf("What do you want to do:\n1: Move to\n2: Line To\n3: Go Home\n");
+	getline(cin, input);
+	buffer << input;
+	buffer >> choice;
+	std::stringstream().swap(buffer);
 
 	while (GUI) {
 		robot.CurrentPosition(next);
-		printf("Input the coordinates (X [mm], Y [mm], Z [mm], P [deg], R [deg], G [mm]): ");
 
-		getline(cin, input);
-		buffer << input;
-		buffer >> next.x >> next.y >> next.z >> next.p >> next.r >> next.g;
-		std::stringstream().swap(buffer);
+		switch (choice) {
+		case '1':
+			printf("Input the coordinates (X [mm], Y [mm], Z [mm], P [deg], R [deg], G [mm]): ");
+			getline(cin, input);
+			buffer << input;
+			buffer >> next.x >> next.y >> next.z >> next.p >> next.r >> next.g;
+			std::stringstream().swap(buffer);
+			printf("Going from (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm) ", current.x, current.y, current.z, current.p, current.r, current.g);
+			printf("to (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", next.x, next.y, next.z, next.p, next.r, next.g);
+			robot.MoveTo(next);
+			robot.CurrentPosition(current);
+			break;
 
-		printf("Going from (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm) ", current.x, current.y, current.z, current.p, current.r, current.g);
-		printf("to (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", next.x, next.y, next.z, next.p, next.r, next.g);
+		case '2':
+			printf("Input the coordinates (X [mm], Y [mm], Z [mm], P [deg], R [deg], G [mm]), & Desired step size [mm]: ");
+			getline(cin, input);
+			buffer << input;
+			buffer >> next.x >> next.y >> next.z >> next.p >> next.r >> next.g >> stepSize;
+			std::stringstream().swap(buffer);
+			printf("Going from (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm) ", current.x, current.y, current.z, current.p, current.r, current.g);
+			printf("to (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", next.x, next.y, next.z, next.p, next.r, next.g);
+			stepSize = -1;
+		
+			robot.LineTo(next, stepSize);
+			stepSize = -1;
+			robot.CurrentPosition(current);
+			break;
 
-		robot.MoveTo(next);
-
-		robot.CurrentPosition(current);
-
-		printf("Do you want to continue? (1/0): ");
-		getline(cin, input);
-		buffer << input;
-		buffer >> GUI;
-		std::stringstream().swap(buffer);
-
-		while ((GUI != 0) && (GUI != 1))
-		{
+		case '3':
+			robot.GoHome();
+			robot.CurrentPosition(current);
+			choice2 = '0';
+			break;
+		case '0':
+			GUI = 0;
+			break;
+		default:
 			printf("Invalid input\n Do you want to continue? (1/0): ");
 			getline(cin, input);
 			buffer << input;
 			buffer >> GUI;
 			std::stringstream().swap(buffer);
+			break;
+
+
+		};
+
+		if (GUI == 1) {
+			if (choice != '3') {
+				printf("Do you want to continue in this mode? (1/0): ");
+				getline(cin, input);
+				buffer << input;
+				buffer >> choice2;
+				std::stringstream().swap(buffer);
+			}
+			switch (choice2) {
+			case '0':
+				printf("What do you want to do:\n1: Move To\n2: Line To\n3: Go Home\n 0: Quit\n");
+				getline(cin, input);
+				buffer << input;
+				buffer >> choice;
+				std::stringstream().swap(buffer);
+				break;
+			case '1':
+				break;
+			default:
+				while ((GUI != 0) && (GUI != 1)) {
+					printf("Invalid input\n Do you want to continue? (1/0): ");
+					getline(cin, input);
+					buffer << input;
+					buffer >> GUI;
+					std::stringstream().swap(buffer);
+				}
+				break;
+			};
 		}
 	}
-}
-
+};
