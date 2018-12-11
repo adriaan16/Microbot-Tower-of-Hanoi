@@ -655,7 +655,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 }
 
 
-//This function fills in the position of the cubes and returns how many cubes were measure
+//This function fills in the position of the cubes and returns how many cubes were measured
 int Microbot::MeasureCubes(Cube c[])//
 {
 	Taskspace t = currentPose.ts;
@@ -703,7 +703,7 @@ int Microbot::MeasureCubes(Cube c[])//
 				c[i + 1].ts = t;
 				c[i + 1].n = j;
 				c[i++ + 1].size = CUBE[j];
-				cout << "Cube assigned!\n";
+				cout << "Cube assigned " << j << " assigned!\n";
 				break;
 			}
 			//If the size didn't fit for any of the five cubes and is bigger than 20mm
@@ -717,6 +717,7 @@ int Microbot::MeasureCubes(Cube c[])//
 			else if (j == 5)
 			{
 				cout << "All cubes measured\n";
+				//Sorts the cube array in a descending order
 				for (int k = 1; k <= i; k++) {
 					tmp = c[k];
 					l = k;
@@ -734,6 +735,20 @@ int Microbot::MeasureCubes(Cube c[])//
 		MoveTo(t);
 	}
 	return i;
+}
+
+int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
+{
+	for (int i = 1; i <= NumberOfCubes; i++)
+	{
+		Taskspace tmp = c[i].ts;
+		tmp.z += 10;
+		tmp.g += 10;
+		c[i].ts = tower.ts;
+		c[i].ts.z = tower.height * 25;
+		PickandPlace(tmp, tower.ts, tower.height++*25 + 10, -1);
+	}
+	return 1;
 }
 
 void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]) {
