@@ -752,31 +752,29 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 }
 
 void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]) {
-	int height;
-	
-	if (i == 2) {
-		if ((t[1].ts.z > t[2].ts.z) && (t[1].ts.z > t[3].ts.z)) {
-			height = t[1].ts.z;
-		}
-		else if ((t[2].ts.z > t[1].ts.z) && (t[2].ts.z > t[3].ts.z)) {
-			height = t[2].ts.z;
-		}
-		else {
-			height = t[3].ts.z;
-		}
-	}
-	else {
-		if (t[s].ts.z > t[d].ts.z) {
-			height = t[s].ts.z;
-		}
-		else {
-			height = t[d].ts.z;
-		}
-	};
-	
-	
 	if (n > 0) {
 		TowerofHanoi(n - 1, s, d, i, moves, c, t);
+		int height;
+		if (i == 2) {
+			if ((t[s].ts.z > t[i].ts.z) && (t[s].ts.z > t[d].ts.z + 25)) {
+				height = t[s].ts.z;
+			}
+			else if ((t[d].ts.z + 25 > t[s].ts.z) && (t[d].ts.z + 25 > t[i].ts.z)) {
+				height = t[d].ts.z + 25;
+			}
+			else {
+				height = t[i].ts.z;
+			}
+		}
+		else {
+			if (t[s].ts.z > t[d].ts.z + 25) {
+				height = t[s].ts.z;
+			}
+			else {
+				height = t[d].ts.z + 25;
+			}
+		};
+
 		cout << "Move " << moves++ << ": Cube " << n;
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
@@ -787,16 +785,12 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
 		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
 		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
-		
-
-
-
 
 		c[n].ts.x = currentPose.ts.x;
 		c[n].ts.y = currentPose.ts.y;
+		c[n].ts.z = t[d].ts.z;
 		//c[n].ts.p = currentPose.ts.p;
 		//c[n].ts.r = currentPose.ts.r;
-		c[n].ts.z = t[d].ts.z;
 		t[s].ts.z -= 25;
 		t[d].ts.z += 25;
 

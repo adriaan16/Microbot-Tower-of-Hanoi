@@ -37,23 +37,19 @@ int main()
 
 	robot.MoveTo(next);
 
-
-
-
-
-	cube[5].ts = { 200,-75,5,-90,90,90 };
-	cube[4].ts = { 200,-75,30,-90,90,80 };
-	cube[3].ts = { 200,-75,55,-90,90,70 };
-	cube[2].ts = { 200,-75,80,-90,90,60 };
 	cube[1].ts = { 200,-75,105,-90,90,50 };
-
+	cube[2].ts = { 200,-75,80,-90,90,60 };
+	cube[3].ts = { 200,-75,55,-90,90,70 };
+	cube[4].ts = { 200,-75,30,-90,90,80 };
+	cube[5].ts = { 200,-75,5,-90,90,90 };
+	
 	tower[1].ts = { 200,-75,130,-90,90,0 };
 	tower[2].ts = { 200,0,5,-90,90,0 };
 	tower[3].ts = { 200,75,5,-90,90,0 };
 
 	//robot.TowerofHanoi(n,1,2,3,m,cube,tower);
 
-	UserInterface(robot);
+	//UserInterface(robot);
 
 	/*
 	robot.SendClose(spe, -1);
