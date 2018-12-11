@@ -784,7 +784,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		printf("Cube %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
 		printf("Tower %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
-		PickandPlace(c[n].ts, t[d].ts, 100, -1);
+		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
 		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
 		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
 		
