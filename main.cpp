@@ -28,9 +28,9 @@ int main()
 	tower[2].ts = { 200,0,5,-90,90,0 };
 	tower[3].ts = { 200,75,5,-90,90,0 };
 
-	//robot.TowerofHanoi(n,1,2,3,m,cube,tower);
+	robot.TowerofHanoi(n,1,2,3,m,cube,tower);
 
-	UserInterface(robot);
+	//UserInterface(robot);
 
 	/*
 	robot.SendClose(spe, -1);

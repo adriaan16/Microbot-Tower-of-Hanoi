@@ -758,7 +758,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
 
-		printf("Cube &g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
+		printf("Cube %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
 		printf("Tower %g: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
 			PickandPlace(c[n].ts, t[d].ts, 100, -1);
@@ -791,7 +791,7 @@ int Microbot::LineTo(Taskspace f){
 
 	linspace(0, 1, SIZE, a);
 
-	cout <<"Number of steps: " << SIZE;
+	cout <<"Number of steps: " << SIZE << endl;
 
 	for (int i = 0; i < SIZE; i++) {
 		tmp[i].ts.x = s.x + a[i] * (f.x - s.x);
@@ -816,6 +816,7 @@ int Microbot::LineTo(Taskspace f){
 		SetDelta(tmp[i - 1].js, tmp[i].js);
 		JointToRegister(deltaJoints, delta);
 		SendStep(microbot_speed, delta);
+
 	};
 
 	lastPose = currentPose;
