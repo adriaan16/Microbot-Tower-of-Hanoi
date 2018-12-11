@@ -16,15 +16,11 @@ using String = std::string;
 Microbot::Microbot() {
 
 	port.Open(1, 9600);
-	microbot_speed = 234;
+	microbot_speed = 235;
+	debug = false;
 	SendReset();
 
-	home.ts.x = 125;
-	home.ts.y = 0;
-	home.ts.z = 0;
-	home.ts.p = -90;
-	home.ts.r = 0;
-	home.ts.g = 0;
+	home.ts = { 125, 0, 0, -90, 0, 0 };
 	InverseKinematics(home.ts, home.js);
 	JointToRegister(home.js, home.rs);
 
@@ -69,7 +65,9 @@ int Microbot::SendStep(int speed, Registerspace del)
 	strcat(c, "\r");
 
 	// print statement for debugging; may be commented out afterwards
-	//printf("String = %s\n", c);
+	if (debug) {
+		printf("String = %s\n", c);
+	}
 
 	fflush(stdin);
 
@@ -89,7 +87,9 @@ int Microbot::SendStep(int speed, Registerspace del)
 	if (ret_num != 0)
 	{
 		// print statement for debugging; may be commented out afterwards
-		//printf("Return from Microbot: %c\n", ret[0]);
+		if (debug) {
+			printf("Return from Microbot: %c\n", ret[0]);
+		}
 		ret[1] = '\0';
 		i = atoi(ret);
 	}
@@ -119,8 +119,9 @@ int Microbot::SendClose(int speed, int force)
 
 	strcat(c, "\r");
 
-	//printf("String = %s\n", c);
-
+	if (debug) {
+		printf("String = %s\n", c);
+	}
 	fflush(stdin);
 
 	i = strlen(c);
@@ -212,8 +213,9 @@ int Microbot::SendRead(Registerspace &read)
 			index++;
 	}
 
-	//printf("Motor steps in ascii =  %s\n", d + 2);
-
+	if (debug) {
+		printf("Motor steps in ascii =  %s\n", d + 2);
+	}
 
 
 	return 0;
@@ -233,7 +235,9 @@ int Microbot::SendSet(int speed)
 	strcat(c, ",");
 	strcat(c, "\r");
 
-	printf("String = %s\n", c);
+	if (debug) {
+		printf("String = %s\n", c);
+	}
 
 	i = strlen(c);
 	port.SendData(c, i);
@@ -258,8 +262,9 @@ int Microbot::SendReset()
 
 	strcat(c, "\r");
 
-	printf("String = %s\n", c);
-
+	if (debug) {
+		printf("String = %s\n", c);
+	}
 	fflush(stdin);
 
 	i = strlen(c);
@@ -305,7 +310,6 @@ int Microbot::InverseKinematics(Taskspace p, Jointspace &j) {
 	alpha = atan2(h, b);
 	beta = atan2(Z0, R0);
 
-	//cout << " X = " << X << " Y = " << Y << " Z = " << Z << " RR = " << RR << " R0 = " << R0 << " Z0 = " << Z0 << " b = " << b << " h = " << h << " alpha = " << alpha << " beta = " << beta <<  endl;
 
 
 	tmp.j[1] = atan2(Y, X);
@@ -315,6 +319,15 @@ int Microbot::InverseKinematics(Taskspace p, Jointspace &j) {
 	tmp.j[5] = P + R + R1 * tmp.j[1];
 
 	tmp.j[6] = G;
+
+	if (debug) {
+
+		cout <<"InverserKinematics: From " <<" X = " << X << " Y = " << Y << " Z = " << Z << " RR = " << RR;
+		cout << " R0 = " << R0 << " Z0 = " << Z0 << " b = " << b << " h = " << h;
+		cout << " alpha = " << alpha << " beta = " << beta << endl;
+		printf("To (%g rad, %g rad, %g rad, %g rad, %g rad, %g mm)\n", tmp.j[1], tmp.j[2], tmp.j[3], tmp.j[4], tmp.j[5], tmp.j[6]);
+	}
+
 
 	int check = CheckWorkspaceLimits(tmp);
 	if (check < 0) {
@@ -332,13 +345,15 @@ int Microbot::ForwardKinematics(Jointspace j, Taskspace &t) {
 	t.p = ((j.j[5] + j.j[4]) / 2.0 + R1 * j.j[1]) * (180.0 / PI);
 	t.r = ((j.j[5] - j.j[4]) / 2.0 - R1 * j.j[1]) * (180.0 / PI);
 	RR = (L * cos(j.j[2]) + L * cos(j.j[3]) + LL * cos(t.p));
-
 	t.x = RR * cos(j.j[1]);
 	t.y = RR * sin(j.j[1]);
 	t.z = H + L * sin(j.j[2]) + L * sin(j.j[3]) + LL * sin(t.p);
-
 	t.g = j.j[6];
 
+	if (debug) {
+		printf("Forward Kinematics: From (%g rad, %g rad, %g rad, %g rad, %g rad, %g mm) ", j.j[1], j.j[2], j.j[3], j.j[4], j.j[5], j.j[6]);
+		printf("To (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", t.x, t.y, t.z, t.p, t.r, t.g);
+	}
 
 	return 1;
 };
@@ -351,6 +366,11 @@ int Microbot::JointToRegister(Jointspace j, Registerspace &r) {
 	r.r[4] = int(-round(j.j[4] * RIGHT_STEPS)); //244.4); //Wrist 1
 	r.r[5] = int(-round(j.j[5] * LEFT_STEPS)); //244.4); //Wrist 2
 	r.r[6] = int(-round(j.j[3] * ELBOW_STEPS - j.j[6] * GRIPPER_STEPS)); //14.76); //Gripper
+
+	if (debug) {
+		printf("JointToRegister: From (%g rad, %g rad, %g rad, %g rad, %g rad, %g mm) ", j.j[1], j.j[2], j.j[3], j.j[4], j.j[5], j.j[6]);
+		printf("To (%d steps, %d steps, %d steps, %d steps, %d steps, %d steps)\n", r.r[1], r.r[2], r.r[3], r.r[4], r.r[5], r.r[6]);
+	}
 
 	return 1;
 };
@@ -365,6 +385,12 @@ int Microbot::RegisterToJoint(Registerspace r, Jointspace &j) {
 	j.j[6] = (r.r[6] - r.r[3]) / GRIPPER_STEPS;
 
 	return 1;
+	if (debug) {
+		printf("RegisterToJoint: From (%d steps, %d steps, %d steps, %d steps, %d steps, %d steps)\n", r.r[1], r.r[2], r.r[3], r.r[4], r.r[5], r.r[6]); 
+		printf("To (%g rad, %g rad, %g rad, %g rad, %g rad, %g mm) ", j.j[1], j.j[2], j.j[3], j.j[4], j.j[5], j.j[6]);;
+	}
+
+
 
 }
 
@@ -595,61 +621,49 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 
 	tmp.ts = start;
 
-
 	//move above location 1 pre pickup
-
-	tmp.ts.z = height;
-	MoveTo(tmp.ts);
-
+		tmp.ts.z = height;
+		MoveTo(tmp.ts);
 
 	//move to location 1
-
-	tmp.ts = start;
-
-	MoveTo(tmp.ts);
+		tmp.ts = start;
+		MoveTo(tmp.ts);
 
 	//close gripper
+		SendReset();
+		SendClose(microbot_speed, gripForce);
+		SendRead(tmpGripHandler.rs);
+		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
+		gripper = tmp.ts.g + tmpGripHandler.ts.g;
+		tmp.ts.g = gripper;
+		SpaceConvertion(currentPose, tmp.ts);
 
-	SendReset();
-
-	//printf("\n Closing Gripper");
-
-	SendClose(235, gripForce);
-
-	SendRead(tmpGripHandler.rs);
-	SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
-	
-	gripper = tmp.ts.g + tmpGripHandler.ts.g;
-	
-	tmp.ts.g = gripper;
-	SpaceConvertion(currentPose, tmp.ts);
-	cout << "Gripper: " << tmp.ts.g << " + " << tmpGripHandler.ts.g << " = " << gripper << endl;
-
+		if (debug) {
+			cout << "Gripper: " << tmp.ts.g << " + " << tmpGripHandler.ts.g << " = " << gripper << endl;
+		}
 	//move above location 1 post pickup
-
-	tmp.ts.z = height;
-	MoveTo(tmp.ts);
+		tmp.ts.z = height;
+		MoveTo(tmp.ts);
 
 	//move above location 2 pre placement
-	tmp.ts = finish;
-	tmp.ts.z = height;
-	tmp.ts.g = gripper;
-
-	MoveTo(tmp.ts);
+		tmp.ts = finish;
+		tmp.ts.z = height;
+		tmp.ts.g = gripper;
+		MoveTo(tmp.ts);
 
 	//move to location 2
-	tmp.ts = finish;
-	tmp.ts.g = gripper;
-	MoveTo(tmp.ts);
+		tmp.ts = finish;
+		tmp.ts.g = gripper;
+		MoveTo(tmp.ts);
 
 	//open gripper
-	tmp.ts.g = tmp.ts.g + 10;
-	MoveTo(tmp.ts);
+		tmp.ts.g = tmp.ts.g + 10;
+		MoveTo(tmp.ts);
 
-	//move to location 2 post placement
-	//tmp.ts = finish;
-	tmp.ts.z = height;
-	MoveTo(tmp.ts);
+	//move above location 2 post placement
+		//tmp.ts = finish;
+		tmp.ts.z = height;
+		MoveTo(tmp.ts);
 
 	return 1;
 }
@@ -681,7 +695,9 @@ int Microbot::MeasureCubes(Cube c[])//
 		SendRead(tmpGripHandler.rs);
 		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
 		t.g += tmpGripHandler.ts.g;
-		cout << "Gripper: " << t.g << " [mm]" << endl;
+		if (debug) {
+			cout << "Gripper: " << t.g << " [mm]" << endl;
+		}
 		SpaceConvertion(currentPose, t);
 		tmpGripHandler.ts.g = t.g;
 		MoveTo(t);
@@ -783,6 +799,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
 		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
+
 		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
 		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
 
@@ -798,7 +815,6 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 	}
 }
 
-
 int Microbot::LineTo(Taskspace f, double stepSize){
 
 	double norm;
@@ -810,11 +826,8 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 	}
 
 	norm = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
-	SIZE = int(ceil(((norm + stepSize / 2.0) / stepSize)));
+	SIZE = int(floor(((norm + stepSize / 2.0) / stepSize))) + 1;
 
-	if (SIZE == 1) {
-		SIZE++;
-	}
 
 	double *a = new double[SIZE];
 	Pose *tmp = new Pose[SIZE];
@@ -866,10 +879,14 @@ void Microbot::linspace(double a, double b, int n, double v[]) {
 }
 
 
+void Microbot::setDebugMode(bool newDebug) {
+	debug = newDebug;
+};
+
 
 void UserInterface(Microbot robot) {
 	Taskspace next;
-	Taskspace current = { 125,0,0,-90,0,0 };
+	Taskspace current;
 	int GUI = 1;
 	string input;
 	stringstream buffer;
@@ -877,6 +894,7 @@ void UserInterface(Microbot robot) {
 	char choice2;
 	double stepSize = -1;
 
+	robot.CurrentPosition(current);
 	printf("What do you want to do:\n1: Move to\n2: Line To\n3: Go Home\n");
 	getline(cin, input);
 	buffer << input;

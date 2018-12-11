@@ -143,7 +143,7 @@ public:
 	void TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]);
 	void linspace(double a, double b, int n, double v[]);
 	int LineTo(Taskspace f,double stepSize);
-
+	void setDebugMode(bool newDebug);
 private:
 
 	// Private Data Members
@@ -154,6 +154,7 @@ private:
 	Jointspace deltaJoints;
 	Registerspace delta;
 	int microbot_speed;
+	bool debug;
 
 	// Private Utility Member Functions
 	double ABS(double);
