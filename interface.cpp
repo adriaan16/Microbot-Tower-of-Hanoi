@@ -774,13 +774,17 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 
 int Microbot::LineTo(Taskspace f){
 
-	double RR;
+	double norm;
 	double multiple = 10.0;
 	int SIZE;
 	Taskspace s = currentPose.ts;
 
-	RR = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
-	SIZE = floor(((RR + multiple / 2.0) / multiple));
+	norm = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
+	SIZE = ceil(((norm + multiple / 2.0) / multiple));
+
+	if (SIZE == 1) {
+		SIZE++;
+	}
 
 	double *a = new double[SIZE];
 	Pose *tmp = new Pose[SIZE];
