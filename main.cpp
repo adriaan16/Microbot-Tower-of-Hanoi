@@ -16,21 +16,44 @@ int main()
 	Cube cube[6];
 	Tower tower[4];
 
-	int n = 3;
+
+
+	int n = 5;
 	int m = 1;
 	
+	/*
+	tower[1].ts = { 200,-75,0,-90,90,0 };
+	cube[1].ts = { 125,-75,0,-90,90,50 };
+	cube[2].ts = { 125,0,0,-90,90,60 };
+	cube[3].ts = { 125,75,0,-90,90,70 };
+	robot.SortCubes(cube, tower[1], 3);
+	*/
 
-	cube[1].ts = { 200,-75,5,-90,90,50 };
-	cube[2].ts = { 200,-75,30,-90,90,60 };
+	robot.SendClose(235, -1);
+	robot.SendReset();
+
+	next = { 125,0,150,-90,0,0 } ;
+
+
+	robot.MoveTo(next);
+
+
+
+
+
+	cube[5].ts = { 200,-75,5,-90,90,90 };
+	cube[4].ts = { 200,-75,30,-90,90,80 };
 	cube[3].ts = { 200,-75,55,-90,90,70 };
+	cube[2].ts = { 200,-75,80,-90,90,60 };
+	cube[1].ts = { 200,-75,105,-90,90,50 };
 
-	tower[1].ts = { 200,-75,55,-90,90,0 };
+	tower[1].ts = { 200,-75,80,-90,90,0 };
 	tower[2].ts = { 200,0,5,-90,90,0 };
 	tower[3].ts = { 200,75,5,-90,90,0 };
 
-	robot.TowerofHanoi(n,1,2,3,m,cube,tower);
+	//robot.TowerofHanoi(n,1,2,3,m,cube,tower);
 
-	//UserInterface(robot);
+	UserInterface(robot);
 
 	/*
 	robot.SendClose(spe, -1);
@@ -45,7 +68,8 @@ int main()
 		robot.PickandPlace();
 	}
 	robot.GoHome();
-	
+	*/
+
 	/*
 	robot.SetSpeed(spe);
 	robot.CurrentPosition(current);
