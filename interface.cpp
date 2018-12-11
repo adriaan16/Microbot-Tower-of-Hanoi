@@ -760,9 +760,11 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 		Taskspace tmp = c[i].ts;
 		tmp.z += 10;
 		tmp.g += 10;
-		c[i].ts = tower.ts;
-		c[i].ts.z = tower.height * 25;
+		c[i].ts.x = tower.ts.x;
+		c[i].ts.y = tower.ts.y;
+		c[i].ts.z = tower.ts.z;
 		PickandPlace(tmp, tower.ts, tower.height++*25 + 10, -1);
+		tower.ts.z += 25;
 	}
 	return 1;
 }
