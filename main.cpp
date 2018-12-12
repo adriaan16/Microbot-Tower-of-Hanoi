@@ -16,16 +16,33 @@ int main()
 	Cube cube[6];
 	Tower tower[4];
 
-	int n = 5;
+	int n;
 	int m = 1;
 	
+	
 	robot.SendClose(235, -1);
-	tower[1].ts = { 200,-75,5,-90,90,0 };
+	robot.SendReset();
+	next = { 125,-125,50,-90,90,70 };
+	robot.MoveTo(next);
+	next = { 250,-125,50,-90,90,70 };
+	robot.MoveTo(next);
+
+	tower[1].ts = { 125,-75,5,-90,90,0 };
 	tower[1].height = 0;
-	cube[3].ts = { 125,-75,5,-90,90,50 };
-	cube[2].ts = { 125,0,5,-90,90,60 };
-	cube[1].ts = { 125,75,5,-90,90,70 };
-	robot.SortCubes(cube, tower[1], 3);
+	/*
+	cube[5].ts = { 200,-125,5,-90,90,30 };
+	cube[4].ts = { 200,-100,5,-90,90,40 };
+	cube[3].ts = { 200,-50,5,-90,90,50 };
+	cube[2].ts = { 200,25,5,-90,90,60 };
+	cube[1].ts = { 200,100,5,-90,90,70 };
+	*/
+	n = robot.MeasureCubes(cube);
+	if (n > 0) 
+	{
+		robot.SortCubes(cube, tower[1], n);
+	}
+	
+	
 	robot.GoHome();
 	/*
 	robot.SendClose(235, -1);

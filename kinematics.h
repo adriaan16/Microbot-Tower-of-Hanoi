@@ -54,7 +54,7 @@
 #define GRIPPER_STEPS 14.763779527559056 //375
 //#define GRIPPER_STEPS 12.3 //375
 const int CUBE[] = { 0,30,40,50,60,70 };
-
+const int CUBE_measure[] = { 0,26,34,41,49,57 };
 
 
 
