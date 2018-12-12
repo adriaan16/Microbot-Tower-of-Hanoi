@@ -28,6 +28,9 @@ int main()
 	robot.MoveTo(next);
 
 	tower[1].ts = { 125,-75,5,-90,90,0 };
+	tower[2].ts = { 125,0,5,-90,90,0 };
+	tower[3].ts = { 125,75,5,-90,90,0 };
+
 	tower[1].height = 0;
 	/*
 	cube[5].ts = { 200,-125,5,-90,90,30 };
@@ -42,7 +45,14 @@ int main()
 		robot.SortCubes(cube, tower[1], n);
 	}
 	
-	
+
+
+
+	robot.TowerofHanoi(n, 1, 2, 3, m, cube, tower);
+
+
+
+
 	robot.GoHome();
 	/*
 	robot.SendClose(235, -1);

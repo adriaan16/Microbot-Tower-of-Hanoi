@@ -618,7 +618,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 
 	Pose tmpGripHandler;
 	Pose tmp;
-
+	start.g += 10;
 	tmp.ts = start;
 
 	//move above location 1 pre pickup
@@ -851,6 +851,8 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 		c[i].ts.z = tower.ts.z;
 		PickandPlace(tmp, tower.ts, ++tower.height*25 + 15, -1);
 		tower.ts.z += 25;
+		cout << "Cube " << i << " coordinates: " << c[i].ts.x << " " << c[i].ts.y << " " << c[i].ts.z << endl;
+		cout << "Amount of Cubes on tower 1: " << tower.height << endl;
 	}
 	return 1;
 }
