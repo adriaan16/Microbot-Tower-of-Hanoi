@@ -144,6 +144,7 @@ public:
 	void linspace(double a, double b, int n, double v[]);
 	int LineTo(Taskspace f,double stepSize);
 	void setDebugMode(bool newDebug);
+	int UserInterface();
 private:
 
 	// Private Data Members
@@ -175,4 +176,3 @@ private:
 };
 
 //Other functions
-void UserInterface(Microbot robot);

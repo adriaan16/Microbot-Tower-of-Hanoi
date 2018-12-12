@@ -763,7 +763,7 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 		c[i].ts.x = tower.ts.x;
 		c[i].ts.y = tower.ts.y;
 		c[i].ts.z = tower.ts.z;
-		PickandPlace(tmp, tower.ts, tower.height++*25 + 10, -1);
+		PickandPlace(tmp, tower.ts, tower.height++*25 + 25, -1);
 		tower.ts.z += 25;
 	}
 	return 1;
@@ -774,10 +774,10 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		TowerofHanoi(n - 1, s, d, i, moves, c, t);
 		double height;
 		if (i == 2) {
-			if ((t[s].ts.z > t[i].ts.z) && (t[s].ts.z > t[d].ts.z + 25)) {
+			if ((t[s].ts.z >= t[i].ts.z) && (t[s].ts.z >= t[d].ts.z + 25)) {
 				height = t[s].ts.z;
 			}
-			else if ((t[d].ts.z + 25 > t[s].ts.z) && (t[d].ts.z + 25 > t[i].ts.z)) {
+			else if ((t[d].ts.z + 25 >= t[s].ts.z) && (t[d].ts.z + 25 >= t[i].ts.z)) {
 				height = t[d].ts.z + 25;
 			}
 			else {
@@ -823,7 +823,7 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 	int SIZE;
 	Taskspace s = currentPose.ts;
 
-	if (stepSize <= 0) {
+	if (stepSize <= 0.0) {
 		stepSize = 20.0;
 	}
 
@@ -836,7 +836,7 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 
 	linspace(0, 1, SIZE, a);
 
-	cout <<"Number of steps: " << SIZE-1;
+	cout <<"Number of steps: " << SIZE-1<<endl;
 
 	for (int i = 0; i < SIZE; i++) {
 		tmp[i].ts.x = s.x + a[i] * (f.x - s.x);
@@ -886,7 +886,7 @@ void Microbot::setDebugMode(bool newDebug) {
 };
 
 
-void UserInterface(Microbot robot) {
+int Microbot::UserInterface() {
 	Taskspace next;
 	Taskspace current;
 	int GUI = 1;
@@ -896,15 +896,15 @@ void UserInterface(Microbot robot) {
 	char choice2;
 	double stepSize = -1;
 
-	robot.CurrentPosition(current);
+	CurrentPosition(current);
 	printf("What do you want to do:\n1: Move to\n2: Line To\n3: Go Home\n");
 	getline(cin, input);
 	buffer << input;
 	buffer >> choice;
 	std::stringstream().swap(buffer);
 
-	while (GUI) {
-		robot.CurrentPosition(next);
+	while (GUI == 1) {
+		CurrentPosition(next);
 
 		switch (choice) {
 		case '1':
@@ -915,8 +915,8 @@ void UserInterface(Microbot robot) {
 			std::stringstream().swap(buffer);
 			printf("Going from (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm) ", current.x, current.y, current.z, current.p, current.r, current.g);
 			printf("to (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", next.x, next.y, next.z, next.p, next.r, next.g);
-			robot.MoveTo(next);
-			robot.CurrentPosition(current);
+			MoveTo(next);
+			CurrentPosition(current);
 			break;
 
 		case '2':
@@ -927,21 +927,21 @@ void UserInterface(Microbot robot) {
 			std::stringstream().swap(buffer);
 			printf("Going from (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm) ", current.x, current.y, current.z, current.p, current.r, current.g);
 			printf("to (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", next.x, next.y, next.z, next.p, next.r, next.g);
-			stepSize = -1;
+
+			cout << " before LineTo: " << stepSize << endl;
 		
-			robot.LineTo(next, stepSize);
+			LineTo(next, stepSize);
 			stepSize = -1;
-			robot.CurrentPosition(current);
+			CurrentPosition(current);
 			break;
 
 		case '3':
-			robot.GoHome();
-			robot.CurrentPosition(current);
+			GoHome();
+			CurrentPosition(current);
 			choice2 = '0';
 			break;
 		case '0':
-			GUI = 0;
-			break;
+			return 1;
 		default:
 			printf("Invalid input\n Do you want to continue? (1/0): ");
 			getline(cin, input);
@@ -963,7 +963,7 @@ void UserInterface(Microbot robot) {
 			}
 			switch (choice2) {
 			case '0':
-				printf("What do you want to do:\n1: Move To\n2: Line To\n3: Go Home\n 0: Quit\n");
+				printf("What do you want to do:\n1: Move To\n2: Line To\n3: Go Home\n0: Quit\n");
 				getline(cin, input);
 				buffer << input;
 				buffer >> choice;
