@@ -612,8 +612,6 @@ int Microbot::SpaceConvertion(Pose &pose, Jointspace j) {
 
 int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int gripForce) {
 
-	int extraHeight = 75;
-	int talestTower = 25 * 6;
 	double gripper = 0;
 
 	Pose tmpGripHandler;
@@ -849,7 +847,7 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 		c[i].ts.x = tower.ts.x;
 		c[i].ts.y = tower.ts.y;
 		c[i].ts.z = tower.ts.z;
-		PickandPlace(tmp, tower.ts, ++tower.height*25 + 15, -1);
+		PickandPlace(tmp, tower.ts, ++tower.height*25 + 5, -1);
 		tower.ts.z += 25;
 		cout << "Cube " << i << " coordinates: " << c[i].ts.x << " " << c[i].ts.y << " " << c[i].ts.z << endl;
 		cout << "Amount of Cubes on tower 1: " << tower.height << endl;
@@ -888,7 +886,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
 		printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
-		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
+		PickandPlace(c[n].ts, t[d].ts, height+5, -1);
 
 		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
 		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
@@ -907,7 +905,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 
 int Microbot::LineTo(Taskspace f, double stepSize){
 
-	double norm;
+	double d;
 	int SIZE;
 	Taskspace s = currentPose.ts;
 
@@ -915,9 +913,8 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 		stepSize = 20.0;
 	}
 
-	norm = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
-	SIZE = int(floor(((norm + stepSize / 2.0) / stepSize))) + 1;
-
+	d = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
+	SIZE = int(floor(((d + stepSize / 2.0) / stepSize))) + 1;
 
 	double *a = new double[SIZE];
 	Pose *tmp = new Pose[SIZE];
@@ -940,7 +937,7 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 
 	for (int i = 0; i < SIZE; i++) {
 		if (SpaceConvertion(tmp[i], tmp[i].ts) <= 0){
-			printf("Unable to Generate Straight line to desired point");
+			printf("Unable to Generate Straight line to desired point \n");
 			return 0;
 		}
 	};
@@ -977,7 +974,7 @@ void Microbot::setDebugMode(bool newDebug) {
 int Microbot::UserInterface() {
 	Taskspace next;
 	Taskspace current;
-	int GUI = 1;
+	bool GUI = true;
 	string input;
 	stringstream buffer;
 	char choice;
@@ -991,7 +988,7 @@ int Microbot::UserInterface() {
 	buffer >> choice;
 	std::stringstream().swap(buffer);
 
-	while (GUI == 1) {
+	while (GUI) {
 		CurrentPosition(next);
 
 		switch (choice) {
@@ -1015,11 +1012,7 @@ int Microbot::UserInterface() {
 			std::stringstream().swap(buffer);
 			printf("Going from (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm) ", current.x, current.y, current.z, current.p, current.r, current.g);
 			printf("to (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n", next.x, next.y, next.z, next.p, next.r, next.g);
-
-			cout << " before LineTo: " << stepSize << endl;
-		
 			LineTo(next, stepSize);
-			stepSize = -1;
 			CurrentPosition(current);
 			break;
 
@@ -1034,14 +1027,14 @@ int Microbot::UserInterface() {
 			printf("Invalid input\n Do you want to continue? (1/0): ");
 			getline(cin, input);
 			buffer << input;
-			buffer >> GUI;
+			buffer >> choice2;
 			std::stringstream().swap(buffer);
 			break;
 
 
 		};
 
-		if (GUI == 1) {
+		if (choice != '0') {
 			if (choice != '3') {
 				printf("Do you want to continue in this mode? (1/0): ");
 				getline(cin, input);
@@ -1060,15 +1053,16 @@ int Microbot::UserInterface() {
 			case '1':
 				break;
 			default:
-				while ((GUI != 0) && (GUI != 1)) {
+				while ((choice2 != '0') && (choice2 != '1')) {
 					printf("Invalid input\n Do you want to continue? (1/0): ");
 					getline(cin, input);
 					buffer << input;
-					buffer >> GUI;
+					buffer >> choice2;
 					std::stringstream().swap(buffer);
 				}
 				break;
 			};
 		}
 	}
+	return 1;
 };
