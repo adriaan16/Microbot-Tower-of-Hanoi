@@ -884,14 +884,19 @@ int Microbot::MeasureCubesTwo(Cube c[], Taskspace start) {
 				for (int j = k; j > 0 && c[j - 1].ts.g > c[j].ts.g; j--) {
 					double tmp = c[j].ts.g;
 					c[j].ts.g = c[j - 1].ts.g;
-					c[j - 1].ts.g = tmp;
+					c[j - 1].ts.g = tmp*1.088;
 				};
 			};
 
 		};
 	};
 
-	printf("%d Cubes where found\n")
+	printf("%d Cubes where found\n",n)
+
+		for (int i = 1; i <= n, i++) {
+			printf("Cube %d, Gripper value: %g\n", i,c[i].ts.g)
+
+		}
 
 
 
