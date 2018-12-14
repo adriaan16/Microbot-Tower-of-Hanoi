@@ -1130,12 +1130,17 @@ int Microbot::UserInterface() {
 				break;
 			default:
 				while ((choice2 != '0') && (choice2 != '1')) {
-					printf("Invalid input\n Do you want to continue? (1/0): ");
+					printf("Invalid input\nDo you want to continue? (1/0): ");
 					getline(cin, input);
 					buffer << input;
 					buffer >> choice2;
 					std::stringstream().swap(buffer);
 				}
+
+				if (choice2 == '0') {
+					return 1;
+				}
+
 				break;
 			};
 		}
