@@ -836,10 +836,74 @@ int Microbot::MeasureCubes(Cube c[])//
 	return i;
 }
 
-int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
-{
-	for (int i = NumberOfCubes; i >=1 ; i--)
-	{
+int Microbot::MeasureCubesTwo(Cube c[], Taskspace start) {
+	Taskspace t = start;
+	Pose tmpGripHandler;
+	//Cube tmp;
+	int n = 0;
+
+
+	t.g = 80;
+	MoveTo(t);
+
+
+	for (int i = 1; i <= 5; i++) {
+		t.z = 5;
+		MoveTo(t);
+
+		SendReset();
+		SendClose(microbot_speed, -1);
+		SendRead(tmpGripHandler.rs);
+		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
+		t.g += tmpGripHandler.ts.g;
+
+		if (t.g >= 20) {
+			SpaceConvertion(currentPose, t);
+			c[i].ts = t;
+			n++;
+			printf("Cube detected at location: %d \n", i);
+		}
+
+
+		//Open gripper back to 80mm
+		t.g = 80;
+		MoveTo(t);
+
+		//Move 30mm above base
+		t.z = 40;
+		MoveTo(t);
+
+		//If there the gripper measured one of the five cubes it moves 75 mm to the side
+
+		if (i <= 4) {
+			t.y += 75;
+			MoveTo(t);
+		}
+		else {
+			for (int k = 1; k <= n; k++) {
+				for (int j = k; j > 0 && c[j - 1].ts.g > c[j].ts.g; j--) {
+					double tmp = c[j].ts.g;
+					c[j].ts.g = c[j - 1].ts.g;
+					c[j - 1].ts.g = tmp;
+				};
+			};
+
+		};
+	};
+
+	printf("%d Cubes where found\n")
+
+
+
+	return n;
+};
+
+
+
+
+
+int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes){
+	for (int i = NumberOfCubes; i >=1 ; i--){
 		Taskspace tmp = c[i].ts;
 
 		//tmp.z += 10;
@@ -888,8 +952,10 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 
 		PickandPlace(c[n].ts, t[d].ts, height+5, -1);
 
-		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
-		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
+		if (debug) {
+			cout << "Tower " << s << " height: " << t[s].ts.z << endl;
+			cout << "Tower " << d << " height: " << t[d].ts.z << endl;
+		}
 
 		c[n].ts.x = currentPose.ts.x;
 		c[n].ts.y = currentPose.ts.y;
@@ -915,6 +981,11 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 
 	d = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
 	SIZE = int(floor(((d + stepSize / 2.0) / stepSize))) + 1;
+
+	if (SIZE <= 1) {
+		SIZE++;
+	}
+
 
 	double *a = new double[SIZE];
 	Pose *tmp = new Pose[SIZE];
