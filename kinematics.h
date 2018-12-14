@@ -141,7 +141,7 @@ public:
 	int PickandPlace(Taskspace start, Taskspace finish, double height, int gripForce);
 	int MeasureCubes(Cube c[]);
 	int SortCubes(Cube c[], Tower &tower, int NumberOfCubes);
-	void TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]);
+	void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[], double num);
 	void linspace(double a, double b, int n, double v[]);
 	int LineTo(Taskspace f,double stepSize);
 	void setDebugMode(bool newDebug);

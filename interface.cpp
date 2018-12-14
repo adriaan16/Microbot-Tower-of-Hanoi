@@ -779,9 +779,9 @@ int Microbot::MeasureCubes(Cube c[])//
 		SendRead(tmpGripHandler.rs);
 		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
 		t.g += tmpGripHandler.ts.g;
-		//if (debug) {
+		if (debug) {
 			cout << "Gripper: " << t.g << " [mm]" << endl;
-		//}
+		}
 		SpaceConvertion(currentPose, t);
 		tmpGripHandler.ts = t;
 		MoveTo(t);
@@ -802,7 +802,7 @@ int Microbot::MeasureCubes(Cube c[])//
 				c[i + 1].ts = tmpGripHandler.ts;
 				//c[i + 1].n = j;
 				c[i++ + 1].size = tmpGripHandler.ts.g * 1.0888; // CUBE[j];
-				cout << "Cube assigned! size = " << c[i].size << endl;
+				cout << "Cube found at location " << i << endl;
 				if (i == 5) {
 					five = true;
 				}
@@ -817,7 +817,7 @@ int Microbot::MeasureCubes(Cube c[])//
 			//
 			if (tmpGripHandler.ts.g < 20 || five)
 			{
-				cout << "All cubes measured\n";
+				cout << i << " cubes measured\n\n";
 				//Sorts the cube array in a descending order
 				for (int k = 1; k <= i; k++) {
 					tmp = c[k];
@@ -858,9 +858,9 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 	return 1;
 }
 
-void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]) {
+void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[],double num ) {
 	if (n > 0) {
-		TowerofHanoi(n - 1, s, d, i, moves, c, t);
+		TowerofHanoi(n - 1, s, d, i, moves, c, t,num);
 		double height;
 		if (i == 2) {
 			if ((t[s].ts.z >= t[i].ts.z) && (t[s].ts.z >= t[d].ts.z + 25)) {
@@ -882,17 +882,17 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 			}
 		};
 
-		cout << "Move " << moves++ << ": Cube " << n;
+		cout << "Move " << moves++ << " of " << num <<": Cube " << n;
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
 
-		printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
-		printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
+		//printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
+		//printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
-		PickandPlace(c[n].ts, t[d].ts, height+5, -1);
+		PickandPlace(c[n].ts, t[d].ts, height+10, -1);
 
-		cout << "Tower " << s << " height: " << t[s].ts.z << endl;
-		cout << "Tower " << d << " height: " << t[d].ts.z << endl;
+		//cout << "Tower " << s << " height: " << t[s].ts.z << endl;
+		//cout << "Tower " << d << " height: " << t[d].ts.z << endl;
 
 		c[n].ts.x = currentPose.ts.x;
 		c[n].ts.y = currentPose.ts.y;
@@ -902,7 +902,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		t[s].ts.z -= 25;
 		t[d].ts.z += 25;
 
-		TowerofHanoi(n - 1, i, s, d, moves, c, t);
+		TowerofHanoi(n - 1, i, s, d, moves, c, t, num);
 	}
 }
 
