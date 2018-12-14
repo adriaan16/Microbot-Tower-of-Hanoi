@@ -891,10 +891,10 @@ int Microbot::MeasureCubesTwo(Cube c[], Taskspace start) {
 		};
 	};
 
-	printf("%d Cubes where found\n",n)
+	printf("%d Cubes where found\n", n);
 
-		for (int i = 1; i <= n, i++) {
-			printf("Cube %d, Gripper value: %g\n", i,c[i].ts.g)
+		for (int i = 1; i <= n; i++) {
+			printf("Cube %d, Gripper value: %g\n", i, c[i].ts.g);
 
 		}
 
