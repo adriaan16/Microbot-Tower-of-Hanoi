@@ -18,7 +18,10 @@ int main()
 	double num;
 	int n;
 	int m = 1;
-	
+	char starter;
+
+	cout << "Press any key to start sorting and solving the Tower of Hanoi\n";
+	cin >> starter;
 	robot.SendClose(235, -1);
 	robot.SendReset();
 	//robot.UserInterface();
@@ -37,6 +40,9 @@ int main()
 	
 	n = robot.MeasureCubes(cube);
 	
+
+
+	printf("Moving cubes to Tower 1:\n");
 	if (n > 0) 
 	{
 		robot.SortCubes(cube, tower[1], n);

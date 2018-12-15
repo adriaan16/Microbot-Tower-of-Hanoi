@@ -616,7 +616,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 
 	Pose tmpGripHandler;
 	Pose tmp;
-	start.g += 10;
+	start.g += 15;
 	tmp.ts = start;
 
 	//move above location 1 pre pickup
@@ -652,10 +652,11 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 	//move to location 2
 		tmp.ts = finish;
 		tmp.ts.g = gripper;
+		tmp.ts.z += 5;
 		MoveTo(tmp.ts);
 
 	//open gripper
-		tmp.ts.g = tmp.ts.g + 10;
+		tmp.ts.g = tmp.ts.g + 15;
 		MoveTo(tmp.ts);
 
 	//move above location 2 post placement
@@ -850,7 +851,7 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
 		c[i].ts.x = tower.ts.x;
 		c[i].ts.y = tower.ts.y;
 		c[i].ts.z = tower.ts.z;
-		PickandPlace(tmp, tower.ts, ++tower.height*25 + 15, -1);
+		PickandPlace(tmp, tower.ts, ++tower.height*25 + 20, -1);
 		tower.ts.z += 25;
 		cout << "Cube " << i << " coordinates: " << c[i].ts.x << " " << c[i].ts.y << " " << c[i].ts.z << endl;
 		cout << "Amount of Cubes on tower 1: " << tower.height << endl;
@@ -889,7 +890,7 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		//printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
 		//printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
-		PickandPlace(c[n].ts, t[d].ts, height+10, -1);
+		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
 
 		//cout << "Tower " << s << " height: " << t[s].ts.z << endl;
 		//cout << "Tower " << d << " height: " << t[d].ts.z << endl;
