@@ -325,7 +325,8 @@ int Microbot::InverseKinematics(Taskspace p, Jointspace &j) {
 		cout <<"InverserKinematics: From " <<" X = " << X << " Y = " << Y << " Z = " << Z << " RR = " << RR;
 		cout << " R0 = " << R0 << " Z0 = " << Z0 << " b = " << b << " h = " << h;
 		cout << " alpha = " << alpha << " beta = " << beta << endl;
-		printf("To (%g rad, %g rad, %g rad, %g rad, %g rad, %g mm)\n", tmp.j[1], tmp.j[2], tmp.j[3], tmp.j[4], tmp.j[5], tmp.j[6]);
+		printf("To (%g rad, %g rad, %g rad",tmp.j[1], tmp.j[2], tmp.j[3]), 
+		printf("%g rad, %g rad, %g mm)\n", tmp.j[4], tmp.j[5], tmp.j[6]);
 	}
 
 
