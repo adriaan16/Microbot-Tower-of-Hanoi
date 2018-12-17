@@ -54,6 +54,7 @@
 #define GRIPPER_STEPS 14.763779527559056 //375
 //#define GRIPPER_STEPS 12.3 //375
 const int CUBE[] = { 0,30,40,50,60,70 };
+//const int CUBE_measure[] = { 0,26,34,41,49,57 };
 const int CUBE_measure[] = { 0,26,34,41,49,57 };
 
 
@@ -139,9 +140,8 @@ public:
 
 	int PickandPlace(Taskspace start, Taskspace finish, double height, int gripForce);
 	int MeasureCubes(Cube c[]);
-	int MeasureCubesTwo(Cube c[],Taskspace start);
 	int SortCubes(Cube c[], Tower &tower, int NumberOfCubes);
-	void TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]);
+	void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[], double num);
 	void linspace(double a, double b, int n, double v[]);
 	int LineTo(Taskspace f,double stepSize);
 	void setDebugMode(bool newDebug);

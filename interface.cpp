@@ -476,6 +476,35 @@ int Microbot::SetDelta(Jointspace start, Jointspace finish) {
 
 
 
+/*int  Microbot::MoveTo(Taskspace &t) {
+	Pose tmp = currentPose;
+
+
+	int check1 = CheckWorkspaceLimits(t);
+	if (check1 <= 0) {
+		return 0;
+	};
+
+	int check2 = InverseKinematics(t, tmp.js);
+	if (check2 <= 0) {
+		return 0;
+	}
+
+
+	SetDelta(currentPose.js, tmp.js);
+
+	JointToRegister(deltaJoints, delta);
+
+	SpaceConvertion(tmp, t);
+
+	SendStep(microbot_speed, delta);
+
+	lastPose = currentPose;
+	currentPose = tmp;
+
+	return 1;
+
+}*/
 
 int  Microbot::MoveTo(Taskspace &t) {
 	Pose tmp = currentPose;
@@ -587,7 +616,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 
 	Pose tmpGripHandler;
 	Pose tmp;
-	start.g += 10;
+	start.g += 15;
 	tmp.ts = start;
 
 	//move above location 1 pre pickup
@@ -623,10 +652,11 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 	//move to location 2
 		tmp.ts = finish;
 		tmp.ts.g = gripper;
+		tmp.ts.z += 5;
 		MoveTo(tmp.ts);
 
 	//open gripper
-		tmp.ts.g = tmp.ts.g + 10;
+		tmp.ts.g = tmp.ts.g + 15;
 		MoveTo(tmp.ts);
 
 	//move above location 2 post placement
@@ -637,8 +667,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 	return 1;
 }
 
-
-
+/*
 //This function fills in the position of the cubes and returns how many cubes were measured
 int Microbot::MeasureCubes(Cube c[])//
 {
@@ -656,7 +685,7 @@ int Microbot::MeasureCubes(Cube c[])//
 		MoveTo(t);
 
 		//Move gripper down to cube
-		t.z = 0;
+		t.z = 10;
 		MoveTo(t);
 
 		//Use close command to measure width of cube
@@ -669,7 +698,7 @@ int Microbot::MeasureCubes(Cube c[])//
 			cout << "Gripper: " << t.g << " [mm]" << endl;
 		}
 		SpaceConvertion(currentPose, t);
-		tmpGripHandler.ts = t;
+		tmpGripHandler.ts.g = t.g;
 		MoveTo(t);
 
 		//Open gripper back to 80mm
@@ -684,9 +713,9 @@ int Microbot::MeasureCubes(Cube c[])//
 		for (int j = 1; j <= 5; j++)
 		{
 			//Find out which of the five cubes is being measured
-			if (((CUBE_measure[j] - 4) < tmpGripHandler.ts.g) && (tmpGripHandler.ts.g < (CUBE_measure[j] + 4)))
+			if (((CUBE[j] - 4) < tmpGripHandler.ts.g) && (tmpGripHandler.ts.g < (CUBE[j] + 4)))
 			{
-				c[i + 1].ts = tmpGripHandler.ts;
+				c[i + 1].ts = t;
 				c[i + 1].n = j;
 				c[i++ + 1].size = CUBE[j];
 				cout << "Cube assigned " << j << " assigned!\n";
@@ -722,11 +751,99 @@ int Microbot::MeasureCubes(Cube c[])//
 	}
 	return i;
 }
+*/
 
+//This function fills in the position of the cubes and returns how many cubes were measured
+int Microbot::MeasureCubes(Cube c[])//
+{
+	Taskspace t = currentPose.ts;
+	Pose tmpGripHandler;
+	int i = 0, l;
+	Cube tmp;
+	bool five = false;
 
+	while (i<=5)
+	{
+		//Gripper above cube, along x-axis, open 80mm
+		t.z = 40;
+		t.r = 90;
+		t.g = 80;
+		MoveTo(t);
 
-int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes){
-	for (int i = NumberOfCubes; i >=1 ; i--){
+		//Move gripper down to cube
+		t.z = 5;
+		MoveTo(t);
+
+		//Use close command to measure width of cube
+		SendReset();
+		SendClose(microbot_speed, -1);
+		SendRead(tmpGripHandler.rs);
+		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
+		t.g += tmpGripHandler.ts.g;
+		if (debug) {
+			cout << "Gripper: " << t.g << " [mm]" << endl;
+		}
+		SpaceConvertion(currentPose, t);
+		tmpGripHandler.ts = t;
+		MoveTo(t);
+
+		//Open gripper back to 80mm
+		t.g = 80;
+		MoveTo(t);
+
+		//Move 30mm above base
+		t.z = 40;
+		MoveTo(t);
+		//Here we check whether a cube is present or not, and if it is done measuring all cubes
+		//for (int j = 1; j <= 5; j++)
+		//{
+			//Find out which of the five cubes is being measured
+			if (tmpGripHandler.ts.g > 20)
+			{
+				c[i + 1].ts = tmpGripHandler.ts;
+				//c[i + 1].n = j;
+				c[i++ + 1].size = tmpGripHandler.ts.g * 1.0888; // CUBE[j];
+				cout << "Cube found at location " << i << endl;
+				if (i == 5) {
+					five = true;
+				}
+			}
+			//If the size didn't fit for any of the five cubes and is bigger than 20mm
+			//or if it was the first measurement and didn't fit for any of the five cubes
+			else if (i == 0)
+			{
+				cout << "No cube measured\n";
+				return i;
+			}
+			//
+			if (tmpGripHandler.ts.g < 20 || five)
+			{
+				cout << i << " cubes measured\n\n";
+				//Sorts the cube array in a descending order
+				for (int k = 1; k <= i; k++) {
+					tmp = c[k];
+					l = k;
+					while (l > 1 && c[l - 1].size > tmp.size) {
+						c[l] = c[l - 1];
+						l--;
+					}
+					c[l] = tmp;
+				}
+				return i;
+			}
+			
+		//}
+		//If there the gripper measured one of the five cubes it moves 50 mm to the side
+		t.y += 75;
+		MoveTo(t);
+	}
+	return i;
+}
+
+int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes)
+{
+	for (int i = NumberOfCubes; i >=1 ; i--)
+	{
 		Taskspace tmp = c[i].ts;
 
 		//tmp.z += 10;
@@ -734,7 +851,7 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes){
 		c[i].ts.x = tower.ts.x;
 		c[i].ts.y = tower.ts.y;
 		c[i].ts.z = tower.ts.z;
-		PickandPlace(tmp, tower.ts, ++tower.height*25 + 5, -1);
+		PickandPlace(tmp, tower.ts, ++tower.height*25 + 20, -1);
 		tower.ts.z += 25;
 		cout << "Cube " << i << " coordinates: " << c[i].ts.x << " " << c[i].ts.y << " " << c[i].ts.z << endl;
 		cout << "Amount of Cubes on tower 1: " << tower.height << endl;
@@ -742,9 +859,9 @@ int Microbot::SortCubes(Cube c[], Tower &tower, int NumberOfCubes){
 	return 1;
 }
 
-void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[]) {
+void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], Tower t[],double num ) {
 	if (n > 0) {
-		TowerofHanoi(n - 1, s, d, i, moves, c, t);
+		TowerofHanoi(n - 1, s, d, i, moves, c, t,num);
 		double height;
 		if (i == 2) {
 			if ((t[s].ts.z >= t[i].ts.z) && (t[s].ts.z >= t[d].ts.z + 25)) {
@@ -766,27 +883,27 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 			}
 		};
 
-		cout << "Move " << moves++ << ": Cube " << n;
+		cout << "Move " << moves++ << " of " << num <<": Cube " << n;
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
 
-		printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
-		printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
+		//printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
+		//printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
-		PickandPlace(c[n].ts, t[d].ts, height+5, -1);
+		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
 
-		if (debug) {
-			cout << "Tower " << s << " height: " << t[s].ts.z << endl;
-			cout << "Tower " << d << " height: " << t[d].ts.z << endl;
-		}
+		//cout << "Tower " << s << " height: " << t[s].ts.z << endl;
+		//cout << "Tower " << d << " height: " << t[d].ts.z << endl;
 
 		c[n].ts.x = currentPose.ts.x;
 		c[n].ts.y = currentPose.ts.y;
 		c[n].ts.z = t[d].ts.z;
+		//c[n].ts.p = currentPose.ts.p;
+		//c[n].ts.r = currentPose.ts.r;
 		t[s].ts.z -= 25;
 		t[d].ts.z += 25;
 
-		TowerofHanoi(n - 1, i, s, d, moves, c, t);
+		TowerofHanoi(n - 1, i, s, d, moves, c, t, num);
 	}
 }
 
@@ -802,11 +919,6 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 
 	d = sqrt((s.x - f.x)*(s.x - f.x) + (s.y - f.y)*(s.y - f.y) + (s.z - f.z)*(s.z - f.z));
 	SIZE = int(floor(((d + stepSize / 2.0) / stepSize))) + 1;
-
-	if (SIZE <= 1) {
-		SIZE++;
-	}
-
 
 	double *a = new double[SIZE];
 	Pose *tmp = new Pose[SIZE];
