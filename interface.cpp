@@ -15,7 +15,7 @@ using namespace std;
 using String = std::string;
 Microbot::Microbot() {
 
-	//port.Open(1, 9600);
+	port.Open(1, 9600);
 	microbot_speed = 235;
 	debug = false;
 	SendReset();
