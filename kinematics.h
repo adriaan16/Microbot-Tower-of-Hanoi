@@ -171,9 +171,9 @@ private:
 	int JointToRegister(Jointspace j, Registerspace &r);
 	int RegisterToJoint(Registerspace r, Jointspace &j);
 
-	int SpaceConvertion(Pose &pose, Taskspace t);
-	int SpaceConvertion(Pose &pose, Registerspace r);
-	int SpaceConvertion(Pose &pose, Jointspace j);
+	int SpaceConversion(Pose &pose, Taskspace t);
+	int SpaceConversion(Pose &pose, Registerspace r);
+	int SpaceConversion(Pose &pose, Jointspace j);
 };
 
 //Other functions

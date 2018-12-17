@@ -15,7 +15,7 @@ using namespace std;
 using String = std::string;
 Microbot::Microbot() {
 
-	port.Open(1, 9600);
+	//port.Open(1, 9600);
 	microbot_speed = 235;
 	debug = false;
 	SendReset();
@@ -476,41 +476,12 @@ int Microbot::SetDelta(Jointspace start, Jointspace finish) {
 
 
 
-/*int  Microbot::MoveTo(Taskspace &t) {
-	Pose tmp = currentPose;
-
-
-	int check1 = CheckWorkspaceLimits(t);
-	if (check1 <= 0) {
-		return 0;
-	};
-
-	int check2 = InverseKinematics(t, tmp.js);
-	if (check2 <= 0) {
-		return 0;
-	}
-
-
-	SetDelta(currentPose.js, tmp.js);
-
-	JointToRegister(deltaJoints, delta);
-
-	SpaceConvertion(tmp, t);
-
-	SendStep(microbot_speed, delta);
-
-	lastPose = currentPose;
-	currentPose = tmp;
-
-	return 1;
-
-}*/
 
 int  Microbot::MoveTo(Taskspace &t) {
 	Pose tmp = currentPose;
 
 
-	int check = SpaceConvertion(tmp, t);
+	int check = SpaceConversion(tmp, t);
 	if (check <= 0) {
 		return 0;
 	}
@@ -542,7 +513,7 @@ void Microbot::CurrentPosition(Taskspace &t) {
 };
 
 
-int Microbot::SpaceConvertion(Pose &pose, Taskspace t) {
+int Microbot::SpaceConversion(Pose &pose, Taskspace t) {
 
 
 	Pose tmp = pose;
@@ -566,7 +537,7 @@ int Microbot::SpaceConvertion(Pose &pose, Taskspace t) {
 
 }
 
-int Microbot::SpaceConvertion(Pose &pose, Registerspace r) {
+int Microbot::SpaceConversion(Pose &pose, Registerspace r) {
 
 	Pose tmp = pose;
 	tmp.rs = r;
@@ -587,7 +558,7 @@ int Microbot::SpaceConvertion(Pose &pose, Registerspace r) {
 	return 1;
 }
 
-int Microbot::SpaceConvertion(Pose &pose, Jointspace j) {
+int Microbot::SpaceConversion(Pose &pose, Jointspace j) {
 
 	Pose tmp = pose;
 	tmp.js = j;
@@ -631,10 +602,10 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 		SendReset();
 		SendClose(microbot_speed, gripForce);
 		SendRead(tmpGripHandler.rs);
-		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
+		SpaceConversion(tmpGripHandler, tmpGripHandler.rs);
 		gripper = tmp.ts.g + tmpGripHandler.ts.g;
 		tmp.ts.g = gripper;
-		SpaceConvertion(currentPose, tmp.ts);
+		SpaceConversion(currentPose, tmp.ts);
 
 		if (debug) {
 			cout << "Gripper: " << tmp.ts.g << " + " << tmpGripHandler.ts.g << " = " << gripper << endl;
@@ -667,91 +638,7 @@ int Microbot::PickandPlace(Taskspace start, Taskspace finish, double height, int
 	return 1;
 }
 
-/*
-//This function fills in the position of the cubes and returns how many cubes were measured
-int Microbot::MeasureCubes(Cube c[])//
-{
-	Taskspace t = currentPose.ts;
-	Pose tmpGripHandler;
-	int i = 0, l;
-	Cube tmp;
 
-	while (true)
-	{
-		//Gripper above cube, along x-axis, open 80mm
-		t.z = 40;
-		t.r = 90;
-		t.g = 80;
-		MoveTo(t);
-
-		//Move gripper down to cube
-		t.z = 10;
-		MoveTo(t);
-
-		//Use close command to measure width of cube
-		SendReset();
-		SendClose(microbot_speed, -1);
-		SendRead(tmpGripHandler.rs);
-		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
-		t.g += tmpGripHandler.ts.g;
-		if (debug) {
-			cout << "Gripper: " << t.g << " [mm]" << endl;
-		}
-		SpaceConvertion(currentPose, t);
-		tmpGripHandler.ts.g = t.g;
-		MoveTo(t);
-
-		//Open gripper back to 80mm
-		t.g = 80;
-		MoveTo(t);
-
-		//Move 30mm above base
-		t.z = 40;
-		MoveTo(t);
-
-		//Here we check whether a cube is present or not, and if it is done measuring all cubes
-		for (int j = 1; j <= 5; j++)
-		{
-			//Find out which of the five cubes is being measured
-			if (((CUBE[j] - 4) < tmpGripHandler.ts.g) && (tmpGripHandler.ts.g < (CUBE[j] + 4)))
-			{
-				c[i + 1].ts = t;
-				c[i + 1].n = j;
-				c[i++ + 1].size = CUBE[j];
-				cout << "Cube assigned " << j << " assigned!\n";
-				break;
-			}
-			//If the size didn't fit for any of the five cubes and is bigger than 20mm
-			//or if it was the first measurement and didn't fit for any of the five cubes
-			else if ((j == 5) && (tmpGripHandler.ts.g >= 20 || i == 0))
-			{
-				cout << "Unknown size or no cube measured\n";
-				return i;
-			}
-			//
-			else if (j == 5)
-			{
-				cout << "All cubes measured\n";
-				//Sorts the cube array in a descending order
-				for (int k = 1; k <= i; k++) {
-					tmp = c[k];
-					l = k;
-					while (l > 1 && c[l - 1].n > tmp.n) {
-						c[l] = c[l - 1];
-						l--;
-					}
-					c[l] = tmp;
-				}
-				return i;
-			}
-		}
-		//If there the gripper measured one of the five cubes it moves 50 mm to the side
-		t.y += 65;
-		MoveTo(t);
-	}
-	return i;
-}
-*/
 
 //This function fills in the position of the cubes and returns how many cubes were measured
 int Microbot::MeasureCubes(Cube c[])//
@@ -778,12 +665,12 @@ int Microbot::MeasureCubes(Cube c[])//
 		SendReset();
 		SendClose(microbot_speed, -1);
 		SendRead(tmpGripHandler.rs);
-		SpaceConvertion(tmpGripHandler, tmpGripHandler.rs);
+		SpaceConversion(tmpGripHandler, tmpGripHandler.rs);
 		t.g += tmpGripHandler.ts.g;
 		if (debug) {
 			cout << "Gripper: " << t.g << " [mm]" << endl;
 		}
-		SpaceConvertion(currentPose, t);
+		SpaceConversion(currentPose, t);
 		tmpGripHandler.ts = t;
 		MoveTo(t);
 
@@ -887,19 +774,12 @@ void Microbot::TowerofHanoi(int n, int s, int i, int d, int& moves, Cube c[], To
 		cout << " is moved from tower " << s;
 		cout << " to tower " << d << endl;
 
-		//printf("Cube %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",n, c[n].ts.x, c[n].ts.y, c[n].ts.z, c[n].ts.p, c[n].ts.r, c[n].ts.g);
-		//printf("Tower %d: (%g mm, %g mm, %g mm, %g deg, %g deg, %g mm)\n",d, t[d].ts.x, t[d].ts.y, t[d].ts.z, t[d].ts.p, t[d].ts.r, t[d].ts.g);
 
 		PickandPlace(c[n].ts, t[d].ts, height+15, -1);
-
-		//cout << "Tower " << s << " height: " << t[s].ts.z << endl;
-		//cout << "Tower " << d << " height: " << t[d].ts.z << endl;
 
 		c[n].ts.x = currentPose.ts.x;
 		c[n].ts.y = currentPose.ts.y;
 		c[n].ts.z = t[d].ts.z;
-		//c[n].ts.p = currentPose.ts.p;
-		//c[n].ts.r = currentPose.ts.r;
 		t[s].ts.z -= 25;
 		t[d].ts.z += 25;
 
@@ -940,7 +820,7 @@ int Microbot::LineTo(Taskspace f, double stepSize){
 
 
 	for (int i = 0; i < SIZE; i++) {
-		if (SpaceConvertion(tmp[i], tmp[i].ts) <= 0){
+		if (SpaceConversion(tmp[i], tmp[i].ts) <= 0){
 			printf("Unable to Generate Straight line to desired point \n");
 			return 0;
 		}
