@@ -5,17 +5,11 @@ using namespace std;
 int main()
 {
 	Microbot robot;				// Local variable of the microbot class
-	Registerspace delta;
 	Taskspace next;
 	Taskspace current;			// Local variable for input of motor steps
 	int spe = 235;				// Motor speed; should not be higher than 240
-	string input;
-	stringstream buffer;
-	int GUI = 1;
-	Cube banani[5];
 	Cube cube[6];
 	Tower tower[4];
-
 	int n;
 	int m = 1;
 	
@@ -24,21 +18,14 @@ int main()
 	robot.SendReset();
 	next = { 125,-125,50,-90,90,70 };
 	robot.MoveTo(next);
-	next = { 250,-125,50,-90,90,70 };
-	robot.MoveTo(next);
 
 	tower[1].ts = { 125,-75,5,-90,90,0 };
 	tower[2].ts = { 125,0,5,-90,90,0 };
 	tower[3].ts = { 125,75,5,-90,90,0 };
 
 	tower[1].height = 0;
-	/*
-	cube[5].ts = { 200,-125,5,-90,90,30 };
-	cube[4].ts = { 200,-100,5,-90,90,40 };
-	cube[3].ts = { 200,-50,5,-90,90,50 };
-	cube[2].ts = { 200,25,5,-90,90,60 };
-	cube[1].ts = { 200,100,5,-90,90,70 };
-	*/
+
+
 	n = robot.MeasureCubes(cube);
 	if (n > 0) 
 	{
